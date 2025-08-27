@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <link rel="icon" href="favicon.ico" sizes="any">
-  <meta name="theme-color" content="#7c3aed">
+  <meta name="theme-color" content="#d8d2cf">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Colorimetria & Pantone – Questionário + Laudo</title>
@@ -11,9 +11,9 @@
       --card:#ffffff;
       --ink:#111827;
       --muted:#6b7280;
-      --brand:#7c3aed; /* atualizado pelo seletor */
+      --brand:#7c3aed; --page:#d8d2cf; /* atualizado pelo seletor */
     }
-    html,body{margin:0;padding:0;background:#f6f7fb;color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    html,body{margin:0;padding:0;background:#d8d2cf;color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
     body.theme-editorial{font-family:Georgia, "Times New Roman", Times, serif;letter-spacing:.1px}
     body.theme-editorial h1,body.theme-editorial h2,body.theme-editorial h3,body.theme-editorial .brandname{font-family:Georgia, "Times New Roman", Times, serif}
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px 80px}
@@ -85,10 +85,20 @@
       #qrWrap{display:flex;gap:24px;justify-content:center;margin-top:6px}
     }
     .print-only{display:none}
+  
+    .toastwrap{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:9999}
+    .toast{background:#111827;color:#fff;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;opacity:0;transform:translateY(-10px);transition:opacity .2s ease,transform .2s ease;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+    .toast.on{opacity:1;transform:translateY(0)}
+    .toast.info{background:#111827}
+    .toast.success{background:#16a34a}
+    .toast.error{background:#dc2626}
+    body.dark .toast{border-color:#2d3a50}
+    
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div id="toastWrap" class="toastwrap"></div>
     <header class="print-hide">
       <div class="brandbox">
         <img id="logoPreview" alt="logo"/>
@@ -532,6 +542,27 @@ function setupQRs(v){
   const a=byId('btnDownloadVCF');a.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(vcf);
 }
 
+
+// ---------- Toast / Notificações amigáveis ----------
+function toast(msg, kind='info'){
+  const wrap = byId('toastWrap'); if(!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  // animate
+  requestAnimationFrame(()=> el.classList.add('on'));
+  setTimeout(()=>{ el.classList.remove('on'); setTimeout(()=>el.remove(), 300); }, 3500);
+}
+window.addEventListener('error', (ev)=>{
+  console.error(ev.error || ev.message);
+  toast('Opa! Algo deu errado. Tente novamente ou recarregue a página.', 'error');
+});
+window.addEventListener('unhandledrejection', (ev)=>{
+  console.error(ev.reason);
+  toast('Falha inesperada. Tente novamente.', 'error');
+});
+
 // ---------- Dark mode ----------
 function applyDark(on){document.body.classList.toggle('dark', !!on);localStorage.setItem('colorim_dark', on?'1':'0');byId('btnDark').textContent=on?'☀️ Modo claro':'🌙 Modo escuro'}
 
@@ -665,6 +696,25 @@ function decideSeason(dom,contr,inten){
 }
 function majorSeason(est){if(/Primavera/.test(est))return'Primavera';if(/Verão/.test(est))return'Verão';if(/Outono/.test(est))return'Outono';if(/Inverno/.test(est))return'Inverno';return'Intermediária'}
 
+// ---------- Maquiagem por estação (fix)
+function renderMakeup(est){
+  const mj = majorSeason(est);
+  const M = {
+    'Primavera': {base:'Subtom quente neutro a dourado; leve a natural.',blush:'Pêssego, coral suave',olhos:'Dourado, bronze claro, oliva',labios:'Coral, pêssego, vermelho tomate'},
+    'Verão': {base:'Subtom frio/rosado; leve/sedoso',blush:'Rosa chá, malva',olhos:'Taupe, cinza frio, azul pó',labios:'Rosa frio, framboesa'},
+    'Outono': {base:'Subtom quente/oliva; natural/acetinado',blush:'Terracota, pêssego queimado',olhos:'Cobre, bronze, oliva, teal',labios:'Terracota, tijolo, caramelo'},
+    'Inverno': {base:'Subtom frio/neutro; média cobertura',blush:'Rosa frio, ameixa',olhos:'Preto/grafite, marinho, prata',labios:'Fúcsia, cereja, bordô'},
+    'Intermediária': {base:'Neutro; validar na luz natural',blush:'Pêssego ↔ rosa chá',olhos:'Taupe, bronze suave, sálvia',labios:'Coral ↔ rosa (evitar extremos)'}
+  };
+  const r = M[mj]; const el = document.getElementById('makeup'); if(!el||!r) return;
+  el.innerHTML = `<div class="grid grid-2">
+    <div><strong>Base/Correção</strong><br><span class="foot">${r.base}</span></div>
+    <div><strong>Blush</strong><br><span class="foot">${r.blush}</span></div>
+    <div><strong>Olhos</strong><br><span class="foot">${r.olhos}</span></div>
+    <div><strong>Lábios</strong><br><span class="foot">${r.labios}</span></div>
+  </div>`;
+}
+
 // ---------- Eventos & Persistência ----------
 function restore(){
   // ano default
@@ -702,10 +752,10 @@ document.getElementById('styleSelect').addEventListener('change',e=>{const v=e.t
 byId('btnDark').addEventListener('click',()=>{applyDark(!document.body.classList.contains('dark'))});
 
 // gerar laudo / PDF / downloads
-byId('btnLaudo').addEventListener('click',e=>{e.preventDefault();generateLaudo()});
-byId('btnPDF').addEventListener('click',e=>{e.preventDefault();window.print()});
-byId('btnDownloadHTML').addEventListener('click',e=>{e.preventDefault();downloadHTML()});
-byId('btnDownloadHTMLTop').addEventListener('click',e=>{e.preventDefault();downloadHTML()});
+byId('btnLaudo').addEventListener('click', e=>{e.preventDefault();try{generateLaudo();toast('Laudo gerado com sucesso! ✅','success');}catch(err){console.error(err);toast('Não foi possível gerar o laudo. Revise as respostas e tente novamente.','error');}});
+byId('btnPDF').addEventListener('click', e=>{e.preventDefault();try{window.print();toast('Abrindo visualização para PDF...','info');}catch(err){console.error(err);toast('Não foi possível abrir a impressão.','error');}});
+byId('btnDownloadHTML').addEventListener('click', e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
+byId('btnDownloadHTMLTop').addEventListener('click', e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
 
 // assinaturas
 byId('saveSigs').addEventListener('click',()=>{if(sigClient&&sigAnalyst){setImg(byId('sigClienteImg'),sigClient.toDataURL());setImg(byId('sigAnalistaImg'),sigAnalyst.toDataURL())}});
