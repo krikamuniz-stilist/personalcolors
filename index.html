@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <meta name="theme-color" content="#d8d2cf">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Colorimetria & Pantone – Questionário + Laudo</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <meta name="theme-color" content="#f6f7fb">
   <style>
     :root{
       --card:#ffffff;
       --ink:#111827;
       --muted:#6b7280;
-      --brand:#7c3aed; --page:#d8d2cf; /* atualizado pelo seletor */
+      --brand:#7c3aed; /* atualizado pelo seletor */
+      --page:#f6f7fb;  /* fundo da página (padrão), pode vir da logo */
     }
-    html,body{margin:0;padding:0;background:#d8d2cf;color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    html,body{margin:0;padding:0;background:var(--page, #f6f7fb);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
     body.theme-editorial{font-family:Georgia, "Times New Roman", Times, serif;letter-spacing:.1px}
     body.theme-editorial h1,body.theme-editorial h2,body.theme-editorial h3,body.theme-editorial .brandname{font-family:Georgia, "Times New Roman", Times, serif}
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px 80px}
@@ -64,6 +65,15 @@
     .refitem{border:1px dashed #d1d5db;border-radius:12px;padding:8px;background:#fff}
     .refitem img{width:100%;height:200px;object-fit:cover;border-radius:8px}
 
+    /* ---- Toasts ---- */
+    .toastwrap{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:9999}
+    .toast{background:#111827;color:#fff;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;opacity:0;transform:translateY(-10px);transition:opacity .2s ease,transform .2s ease;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+    .toast.on{opacity:1;transform:translateY(0)}
+    .toast.info{background:#111827}
+    .toast.success{background:#16a34a}
+    .toast.error{background:#dc2626}
+    body.dark .toast{border-color:#2d3a50}
+
     /* ---- Modo escuro ---- */
     body.dark{background:#0b0f19; color:#e5e7eb}
     body.dark .card{background:#0f172a;border-color:#263245;box-shadow:none}
@@ -85,15 +95,6 @@
       #qrWrap{display:flex;gap:24px;justify-content:center;margin-top:6px}
     }
     .print-only{display:none}
-  
-    .toastwrap{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:9999}
-    .toast{background:#111827;color:#fff;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;opacity:0;transform:translateY(-10px);transition:opacity .2s ease,transform .2s ease;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
-    .toast.on{opacity:1;transform:translateY(0)}
-    .toast.info{background:#111827}
-    .toast.success{background:#16a34a}
-    .toast.error{background:#dc2626}
-    body.dark .toast{border-color:#2d3a50}
-    
   </style>
 </head>
 <body>
@@ -109,7 +110,7 @@
       </div>
       <div class="head-actions">
         <button id="btnDark" class="ghost" title="Alternar modo escuro">🌙 Modo escuro</button>
-        <span class="pill">v1.5 • nº do laudo • dark mode</span>
+        <span class="pill">v1.6 • auto-fundo da logo • toasts</span>
       </div>
     </header>
 
@@ -119,7 +120,7 @@
       <div class="grid grid-3">
         <div>
           <label>Nome da marca / estúdio</label>
-          <input id="brandName" type="text" placeholder="Ex.: Estúdio Anna – Colorimetria" />
+          <input id="brandName" type="text" placeholder="Ex.: Erika Muniz — Personal Stylist" />
         </div>
         <div>
           <label>Tagline</label>
@@ -137,6 +138,10 @@
         <div>
           <label>Logo (PNG/JPG)</label>
           <input id="logoFile" type="file" accept="image/*" />
+          <div class="actions" style="margin-top:8px">
+            <button id="btnResetBg" class="ghost" type="button">Restaurar fundo padrão</button>
+          </div>
+          <div class="muted" style="font-size:12px;margin-top:6px">Ao escolher a logo, o fundo da página ajusta automaticamente para combinar com ela. Você pode restaurar quando quiser.</div>
         </div>
         <div>
           <label>Cor da marca</label>
@@ -210,7 +215,7 @@
         </div>
       </div>
 
-      <!-- Perguntas -->
+      <!-- Perguntas (parcial) -->
       <div class="grid grid-3">
         <div>
           <label>1. Bronzeia fácil ou fica vermelha antes?</label>
@@ -444,54 +449,70 @@
 function byId(id){return document.getElementById(id)}
 function readFileAsDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
 function setImg(el, dataURL){ if(!el) return; el.src=dataURL; el.classList.remove('hidden'); }
+function setThemeColor(hex){ let m=document.querySelector('meta[name=\"theme-color\"]'); if(!m){ m=document.createElement('meta'); m.setAttribute('name','theme-color'); document.head.appendChild(m);} m.setAttribute('content',hex); }
+function setPageBg(hex){ document.documentElement.style.setProperty('--page', hex); setThemeColor(hex); localStorage.setItem('colorim_pageBg', hex); }
+function resetPageBg(){ document.documentElement.style.setProperty('--page', '#f6f7fb'); setThemeColor('#f6f7fb'); localStorage.removeItem('colorim_pageBg'); toast('Fundo restaurado ao padrão.','info'); }
+
+// ---------- Toast / Notificações amigáveis ----------
+function toast(msg, kind='info'){
+  const wrap = byId('toastWrap'); if(!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('on'));
+  setTimeout(()=>{ el.classList.remove('on'); setTimeout(()=>el.remove(), 300); }, 3500);
+}
+window.addEventListener('error', (ev)=>{ console.error(ev.error || ev.message); toast('Opa! Algo deu errado. Tente novamente ou recarregue a página.', 'error'); });
+window.addEventListener('unhandledrejection', (ev)=>{ console.error(ev.reason); toast('Falha inesperada. Tente novamente.', 'error'); });
 
 // ---------- Paletas & Comparativos ----------
 const palettes=[
-  {estacao:"Primavera", nome:"Coral vivo", hex:"#FF6F61", pantone:"PANTONE 16-1546"},
-  {estacao:"Primavera", nome:"Pêssego", hex:"#FFA07A", pantone:"PANTONE 1625 C"},
-  {estacao:"Primavera", nome:"Amarelo quente", hex:"#FFC928", pantone:"PANTONE 123 C"},
-  {estacao:"Primavera", nome:"Aqua", hex:"#64D8CB", pantone:"PANTONE 3242 C"},
-  {estacao:"Primavera", nome:"Verde menta", hex:"#9FD3C7", pantone:"PANTONE 337 C"},
-  {estacao:"Primavera", nome:"Camel claro", hex:"#D6B37E", pantone:"PANTONE 7502 C"},
-  {estacao:"Verão", nome:"Rosa frio", hex:"#F2A7C3", pantone:"PANTONE 699 C"},
-  {estacao:"Verão", nome:"Malva", hex:"#B784A7", pantone:"PANTONE 7440 C"},
-  {estacao:"Verão", nome:"Azul pó", hex:"#A9C1D9", pantone:"PANTONE 544 C"},
-  {estacao:"Verão", nome:"Azul aço", hex:"#7089A9", pantone:"PANTONE 5415 C"},
-  {estacao:"Verão", nome:"Lavanda suave", hex:"#C7B7E5", pantone:"PANTONE 7443 C"},
-  {estacao:"Verão", nome:"Sálvia", hex:"#9DB39B", pantone:"PANTONE 5585 C"},
-  {estacao:"Outono", nome:"Terracota", hex:"#C65D3A", pantone:"PANTONE 7572 C"},
-  {estacao:"Outono", nome:"Ferrugem", hex:"#B7410E", pantone:"PANTONE 1675 C"},
-  {estacao:"Outono", nome:"Mostarda", hex:"#D4A017", pantone:"PANTONE 7555 C"},
-  {estacao:"Outono", nome:"Verde oliva", hex:"#6B8E23", pantone:"PANTONE 7497 C"},
-  {estacao:"Outono", nome:"Teal queimado", hex:"#2A7F62", pantone:"PANTONE 7716 C"},
-  {estacao:"Outono", nome:"Marrom chocolate", hex:"#3E2723", pantone:"PANTONE 4975 C"},
-  {estacao:"Inverno", nome:"Azul profundo", hex:"#0F4C81", pantone:"PANTONE 19-4052"},
-  {estacao:"Inverno", nome:"Cobalto", hex:"#1F45FC", pantone:"PANTONE 2935 C"},
-  {estacao:"Inverno", nome:"Borgonha", hex:"#6B0F1A", pantone:"PANTONE 222 C"},
-  {estacao:"Inverno", nome:"Fúcsia", hex:"#D1006C", pantone:"PANTONE 213 C"},
-  {estacao:"Inverno", nome:"Esmeralda fria", hex:"#006D5B", pantone:"PANTONE 7716 C"},
-  {estacao:"Inverno", nome:"Cinza carvão", hex:"#33363F", pantone:"PANTONE 432 C"}
+  {estacao:\"Primavera\", nome:\"Coral vivo\", hex:\"#FF6F61\", pantone:\"PANTONE 16-1546\"},
+  {estacao:\"Primavera\", nome:\"Pêssego\", hex:\"#FFA07A\", pantone:\"PANTONE 1625 C\"},
+  {estacao:\"Primavera\", nome:\"Amarelo quente\", hex:\"#FFC928\", pantone:\"PANTONE 123 C\"},
+  {estacao:\"Primavera\", nome:\"Aqua\", hex:\"#64D8CB\", pantone:\"PANTONE 3242 C\"},
+  {estacao:\"Primavera\", nome:\"Verde menta\", hex:\"#9FD3C7\", pantone:\"PANTONE 337 C\"},
+  {estacao:\"Primavera\", nome:\"Camel claro\", hex:\"#D6B37E\", pantone:\"PANTONE 7502 C\"},
+  {estacao:\"Verão\", nome:\"Rosa frio\", hex:\"#F2A7C3\", pantone:\"PANTONE 699 C\"},
+  {estacao:\"Verão\", nome:\"Malva\", hex:\"#B784A7\", pantone:\"PANTONE 7440 C\"},
+  {estacao:\"Verão\", nome:\"Azul pó\", hex:\"#A9C1D9\", pantone:\"PANTONE 544 C\"},
+  {estacao:\"Verão\", nome:\"Azul aço\", hex:\"#7089A9\", pantone:\"PANTONE 5415 C\"},
+  {estacao:\"Verão\", nome:\"Lavanda suave\", hex:\"#C7B7E5\", pantone:\"PANTONE 7443 C\"},
+  {estacao:\"Verão\", nome:\"Sálvia\", hex:\"#9DB39B\", pantone:\"PANTONE 5585 C\"},
+  {estacao:\"Outono\", nome:\"Terracota\", hex:\"#C65D3A\", pantone:\"PANTONE 7572 C\"},
+  {estacao:\"Outono\", nome:\"Ferrugem\", hex:\"#B7410E\", pantone:\"PANTONE 1675 C\"},
+  {estacao:\"Outono\", nome:\"Mostarda\", hex:\"#D4A017\", pantone:\"PANTONE 7555 C\"},
+  {estacao:\"Outono\", nome:\"Verde oliva\", hex:\"#6B8E23\", pantone:\"PANTONE 7497 C\"},
+  {estacao:\"Outono\", nome:\"Teal queimado\", hex:\"#2A7F62\", pantone:\"PANTONE 7716 C\"},
+  {estacao:\"Outono\", nome:\"Marrom chocolate\", hex:\"#3E2723\", pantone:\"PANTONE 4975 C\"},
+  {estacao:\"Inverno\", nome:\"Azul profundo\", hex:\"#0F4C81\", pantone:\"PANTONE 19-4052\"},
+  {estacao:\"Inverno\", nome:\"Cobalto\", hex:\"#1F45FC\", pantone:\"PANTONE 2935 C\"},
+  {estacao:\"Inverno\", nome:\"Borgonha\", hex:\"#6B0F1A\", pantone:\"PANTONE 222 C\"},
+  {estacao:\"Inverno\", nome:\"Fúcsia\", hex:\"#D1006C\", pantone:\"PANTONE 213 C\"},
+  {estacao:\"Inverno\", nome:\"Esmeralda fria\", hex:\"#006D5B\", pantone:\"PANTONE 7716 C\"},
+  {estacao:\"Inverno\", nome:\"Cinza carvão\", hex:\"#33363F\", pantone:\"PANTONE 432 C\"}
 ];
 const comparativos={
-  quente:[{nome:"Mostarda",hex:"#D4A017"},{nome:"Coral",hex:"#FF6F61"},{nome:"Terracota",hex:"#C65D3A"},{nome:"Oliva",hex:"#6B8E23"}],
-  frio:[{nome:"Azul pó",hex:"#A9C1D9"},{nome:"Rosa frio",hex:"#F2A7C3"},{nome:"Lavanda",hex:"#C7B7E5"},{nome:"Esmeralda fria",hex:"#006D5B"}],
-  claro:[{nome:"Marfim",hex:"#F8F5E1"},{nome:"Bege claro",hex:"#F1E5CF"},{nome:"Menta pálida",hex:"#DDEFE9"},{nome:"Lilás claro",hex:"#EDE3FB"}],
-  escuro:[{nome:"Azul marinho",hex:"#0B2545"},{nome:"Vinho",hex:"#4A001F"},{nome:"Petróleo",hex:"#003B46"},{nome:"Chocolate",hex:"#3E2723"}],
-  suave:[{nome:"Pêssego suave",hex:"#FFD1B3"},{nome:"Rosa chá",hex:"#E6B7C8"},{nome:"Azul bebê",hex:"#CDE4F9"},{nome:"Sálvia",hex:"#B7C3A7"}],
-  intenso:[{nome:"Azul royal",hex:"#4169E1"},{nome:"Fúcsia",hex:"#D1006C"},{nome:"Esmeralda",hex:"#007F5F"},{nome:"Vermelho vivo",hex:"#D7263D"}]
+  quente:[{nome:\"Mostarda\",hex:\"#D4A017\"},{nome:\"Coral\",hex:\"#FF6F61\"},{nome:\"Terracota\",hex:\"#C65D3A\"},{nome:\"Oliva\",hex:\"#6B8E23\"}],
+  frio:[{nome:\"Azul pó\",hex:\"#A9C1D9\"},{nome:\"Rosa frio\",hex:\"#F2A7C3\"},{nome:\"Lavanda\",hex:\"#C7B7E5\"},{nome:\"Esmeralda fria\",hex:\"#006D5B\"}],
+  claro:[{nome:\"Marfim\",hex:\"#F8F5E1\"},{nome:\"Bege claro\",hex:\"#F1E5CF\"},{nome:\"Menta pálida\",hex:\"#DDEFE9\"},{nome:\"Lilás claro\",hex:\"#EDE3FB\"}],
+  escuro:[{nome:\"Azul marinho\",hex:\"#0B2545\"},{nome:\"Vinho\",hex:\"#4A001F\"},{nome:\"Petróleo\",hex:\"#003B46\"},{nome:\"Chocolate\",hex:\"#3E2723\"}],
+  suave:[{nome:\"Pêssego suave\",hex:\"#FFD1B3\"},{nome:\"Rosa chá\",hex:\"#E6B7C8\"},{nome:\"Azul bebê\",hex:\"#CDE4F9\"},{nome:\"Sálvia\",hex:\"#B7C3A7\"}],
+  intenso:[{nome:\"Azul royal\",hex:\"#4169E1\"},{nome:\"Fúcsia\",hex:\"#D1006C\"},{nome:\"Esmeralda\",hex:\"#007F5F\"},{nome:\"Vermelho vivo\",hex:\"#D7263D\"}]
 };
 const neutros=[
-  {nome:"Branco neve",hex:"#FDFDFB",pantone:"—"},{nome:"Off-white",hex:"#F7F4ED",pantone:"PANTONE 7499 C"},
-  {nome:"Marfim",hex:"#F8F5E1",pantone:"PANTONE 7499 C"},{nome:"Bege",hex:"#D9CBB5",pantone:"PANTONE 468 C"},
-  {nome:"Taupe",hex:"#B6A28E",pantone:"PANTONE Warm Gray 3 C"},{nome:"Camel",hex:"#C19A6B",pantone:"PANTONE 728 C"},
-  {nome:"Cinza médio",hex:"#9AA0A6",pantone:"PANTONE 444 C"},{nome:"Carvão",hex:"#33363F",pantone:"PANTONE 432 C"}
+  {nome:\"Branco neve\",hex:\"#FDFDFB\",pantone:\"—\"},{nome:\"Off-white\",hex:\"#F7F4ED\",pantone:\"PANTONE 7499 C\"},
+  {nome:\"Marfim\",hex:\"#F8F5E1\",pantone:\"PANTONE 7499 C\"},{nome:\"Bege\",hex:\"#D9CBB5\",pantone:\"PANTONE 468 C\"},
+  {nome:\"Taupe\",hex:\"#B6A28E\",pantone:\"PANTONE Warm Gray 3 C\"},{nome:\"Camel\",hex:\"#C19A6B\",pantone:\"PANTONE 728 C\"},
+  {nome:\"Cinza médio\",hex:\"#9AA0A6\",pantone:\"PANTONE 444 C\"},{nome:\"Carvão\",hex:\"#33363F\",pantone:\"PANTONE 432 C\"}
 ];
 const metalicos=[
-  {nome:"Dourado (ref.)",hex:"#D4AF37",pantone:"Metallic ref."},
-  {nome:"Prateado (ref.)",hex:"#C0C0C0",pantone:"Metallic ref."},
-  {nome:"Rose Gold (ref.)",hex:"#B76E79",pantone:"Metallic ref."}
+  {nome:\"Dourado (ref.)\",hex:\"#D4AF37\",pantone:\"Metallic ref.\"},
+  {nome:\"Prateado (ref.)\",hex:\"#C0C0C0\",pantone:\"Metallic ref.\"},
+  {nome:\"Rose Gold (ref.)\",hex:\"#B76E79\",pantone:\"Metallic ref.\"}
 ];
-function swatchEl({hex,nome,pantone}){const d=document.createElement('div');d.className='swatch';d.innerHTML=`<div class="chip" style="background:${hex}"></div><div class="meta"><strong>${nome||''}</strong><span>${hex}</span>${pantone?`<span>${pantone}</span>`:''}</div>`;return d}
+function swatchEl({hex,nome,pantone}){const d=document.createElement('div');d.className='swatch';d.innerHTML=`<div class=\"chip\" style=\"background:${hex}\"></div><div class=\"meta\"><strong>${nome||''}</strong><span>${hex}</span>${pantone?`<span>${pantone}</span>`:''}</div>`;return d}
 function renderSwatches(c,items){c.innerHTML='';items.forEach(x=>c.appendChild(swatchEl(x)))}
 function fillPalettes(){
   renderSwatches(byId('palPrimavera'), palettes.filter(p=>p.estacao==='Primavera'));
@@ -533,7 +554,7 @@ function genVCard(v){
   if(v.email) lines.push(`EMAIL;TYPE=INTERNET:${v.email}`);
   if(v.social) lines.push(`URL:${v.social}`);
   lines.push('END:VCARD');
-  return lines.join('\n');
+  return lines.join('\\n');
 }
 function setupQRs(v){
   const linkWrap=byId('footerQRLink');const vcardWrap=byId('footerQRvCard');linkWrap.innerHTML='';vcardWrap.innerHTML='';
@@ -542,26 +563,49 @@ function setupQRs(v){
   const a=byId('btnDownloadVCF');a.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(vcf);
 }
 
-
-// ---------- Toast / Notificações amigáveis ----------
-function toast(msg, kind='info'){
-  const wrap = byId('toastWrap'); if(!wrap) return;
-  const el = document.createElement('div');
-  el.className = 'toast ' + kind;
-  el.textContent = msg;
-  wrap.appendChild(el);
-  // animate
-  requestAnimationFrame(()=> el.classList.add('on'));
-  setTimeout(()=>{ el.classList.remove('on'); setTimeout(()=>el.remove(), 300); }, 3500);
+// ---------- Detecção de cor de fundo da LOGO ----------
+async function extractBgFromDataURL(dataURL){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const w=img.naturalWidth,h=img.naturalHeight;
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      const ctx=c.getContext('2d'); ctx.drawImage(img,0,0);
+      const m=Math.max(1, Math.floor(Math.min(w,h)*0.1));
+      function sample(x,y,w2,h2){
+        const {data}=ctx.getImageData(x,y,w2,h2);
+        const out=[];
+        for(let i=0;i<data.length;i+=4){
+          const r=data[i],g=data[i+1],b=data[i+2],a=data[i+3];
+          if(a<220) continue;
+          const Y=0.2126*r+0.7152*g+0.0722*b;
+          if(Y>150) out.push([r,g,b]);
+        }
+        return out;
+      }
+      let samples=[
+        ...sample(0,0,m,m), ...sample(w-m,0,m,m),
+        ...sample(0,h-m,m,h?m:1), ...sample(w-m,h-m,m,m)
+      ];
+      if(samples.length<64){
+        samples=[...samples, ...sample(0,0,w,m), ...sample(0,h-m,w,m), ...sample(0,0,m,h), ...sample(w-m,0,m,h)];
+      }
+      if(samples.length===0){
+        const {data}=ctx.getImageData(0,0,w,h);
+        for(let i=0;i<data.length;i+=4){ samples.push([data[i],data[i+1],data[i+2]]); }
+      }
+      const rarr=samples.map(s=>s[0]).sort((a,b)=>a-b);
+      const garr=samples.map(s=>s[1]).sort((a,b)=>a-b);
+      const barr=samples.map(s=>s[2]).sort((a,b)=>a-b);
+      const med=(arr)=>arr[Math.floor(arr.length/2)];
+      const r=med(rarr), g=med(garr), b=med(barr);
+      const hex='#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+      resolve(hex);
+    };
+    img.onerror=()=>resolve(null);
+    img.src=dataURL;
+  });
 }
-window.addEventListener('error', (ev)=>{
-  console.error(ev.error || ev.message);
-  toast('Opa! Algo deu errado. Tente novamente ou recarregue a página.', 'error');
-});
-window.addEventListener('unhandledrejection', (ev)=>{
-  console.error(ev.reason);
-  toast('Falha inesperada. Tente novamente.', 'error');
-});
 
 // ---------- Dark mode ----------
 function applyDark(on){document.body.classList.toggle('dark', !!on);localStorage.setItem('colorim_dark', on?'1':'0');byId('btnDark').textContent=on?'☀️ Modo claro':'🌙 Modo escuro'}
@@ -578,11 +622,12 @@ function downloadHTML(){
     colorim_ref_look: localStorage.getItem('colorim_ref_look')||null,
     colorim_brandColor: localStorage.getItem('colorim_brandColor')||null,
     colorim_theme: localStorage.getItem('colorim_theme')||null,
-    colorim_dark: localStorage.getItem('colorim_dark')||null
+    colorim_dark: localStorage.getItem('colorim_dark')||null,
+    colorim_pageBg: localStorage.getItem('colorim_pageBg')||null
   };
   const html=document.documentElement.outerHTML;
-  const inject=`<script>(function(){try{var d=${JSON.stringify(payload)};if(d)for(var k in d){if(d[k]) localStorage.setItem(k,d[k]);} document.addEventListener('DOMContentLoaded',function(){ if(d.colorim_brandColor){ document.documentElement.style.setProperty('--brand', d.colorim_brandColor);} if(d.colorim_theme==='editorial'){ document.body.classList.add('theme-editorial'); } if(d.colorim_dark==='1'){ document.body.classList.add('dark'); } }); }catch(e){}})();<\/script>`;
-  const final=html.replace('</body>', inject+'\n</body>');
+  const inject=`<script>(function(){try{var d=${JSON.stringify(payload)};if(d)for(var k in d){if(d[k]) localStorage.setItem(k,d[k]);} document.addEventListener('DOMContentLoaded',function(){ if(d.colorim_brandColor){ document.documentElement.style.setProperty('--brand', d.colorim_brandColor);} if(d.colorim_theme==='editorial'){ document.body.classList.add('theme-editorial'); } if(d.colorim_dark==='1'){ document.body.classList.add('dark'); } if(d.colorim_pageBg){ document.documentElement.style.setProperty('--page', d.colorim_pageBg); var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute('content', d.colorim_pageBg); } }); }catch(e){}})();<\\/script>`;
+  const final=html.replace('</body>', inject+'\\n</body>');
   const blob=new Blob([final],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Colorimetria_App.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000)
 }
 
@@ -620,7 +665,7 @@ function generateLaudo(){
   if(!seq||seq<1) seq=nextSeq(year);
   seqStr=pad3(seq);
   const laudoId=`${prefix}-${year}-${seqStr}`;
-  byId('laudoSeq').value=seqStr; // exibe o seq utilizado
+  byId('laudoSeq').value=seqStr;
 
   // Scoring
   const sc=scoreWarmCool({Q1:v.Q1,Q2:v.Q2,Q3:v.Q3,Q4:v.Q4,Q5:v.Q5,Q10:v.Q10,Q11:v.Q11,Q12:v.Q12});
@@ -672,6 +717,7 @@ function generateLaudo(){
 
   // Signature pads (uma vez)
   if(!sigClient){ sigClient=SigPad(byId('sigCliente')); sigAnalyst=SigPad(byId('sigAnalista')); }
+  toast('Laudo gerado com sucesso! ✅','success');
 }
 
 // ---------- Scoring helpers ----------
@@ -696,17 +742,17 @@ function decideSeason(dom,contr,inten){
 }
 function majorSeason(est){if(/Primavera/.test(est))return'Primavera';if(/Verão/.test(est))return'Verão';if(/Outono/.test(est))return'Outono';if(/Inverno/.test(est))return'Inverno';return'Intermediária'}
 
-// ---------- Maquiagem por estação (fix)
+// ---------- Maquiagem por estação ----------
 function renderMakeup(est){
   const mj = majorSeason(est);
   const M = {
-    'Primavera': {base:'Subtom quente neutro a dourado; leve a natural.',blush:'Pêssego, coral suave',olhos:'Dourado, bronze claro, oliva',labios:'Coral, pêssego, vermelho tomate'},
-    'Verão': {base:'Subtom frio/rosado; leve/sedoso',blush:'Rosa chá, malva',olhos:'Taupe, cinza frio, azul pó',labios:'Rosa frio, framboesa'},
-    'Outono': {base:'Subtom quente/oliva; natural/acetinado',blush:'Terracota, pêssego queimado',olhos:'Cobre, bronze, oliva, teal',labios:'Terracota, tijolo, caramelo'},
-    'Inverno': {base:'Subtom frio/neutro; média cobertura',blush:'Rosa frio, ameixa',olhos:'Preto/grafite, marinho, prata',labios:'Fúcsia, cereja, bordô'},
-    'Intermediária': {base:'Neutro; validar na luz natural',blush:'Pêssego ↔ rosa chá',olhos:'Taupe, bronze suave, sálvia',labios:'Coral ↔ rosa (evitar extremos)'}
+    'Primavera': {base:'Subtom quente neutro a dourado; acabamentos leve a natural. Corretivo pêssego para olheiras.',blush:'Pêssego, coral suave, damasco.',olhos:'Dourado, bronze claro, oliva claro, champagne; delineador marrom.',labios:'Coral, pêssego, melancia, vermelho tomate.'},
+    'Verão': {base:'Subtom frio/rosado ou neutro-frio; acabamentos leve/sedoso.',blush:'Rosa chá, malva suave.',olhos:'Taupe, cinza frio, ameixa clara, azul pó; delineador grafite.',labios:'Rosa frio, framboesa suave, malva.'},
+    'Outono': {base:'Subtom quente/oliva; acabamento natural/acetinado.',blush:'Terracota, pêssego queimado.',olhos:'Cobre, bronze, oliva, teal queimado; delineador marrom escuro.',labios:'Terracota, tijolo, caramelo, vermelho queimado.'},
+    'Inverno': {base:'Subtom frio/neutro; cobertura média; contraste definido.',blush:'Rosa frio, framboesa, ameixa.',olhos:'Preto/grafite, marinho, prata, esmeralda fria; brilho pontual frio.',labios:'Fúcsia, cereja, bordô, vermelho frio.'},
+    'Intermediária': {base:'Neutro (teste sob luz natural). Ajuste conforme contraste.',blush:'Do pêssego ao rosa chá, conforme preferência.',olhos:'Neutros versáteis (taupe, bronze suave, sálvia).',labios:'Do coral ao rosa, evitando extremos se o contraste for baixo.'}
   };
-  const r = M[mj]; const el = document.getElementById('makeup'); if(!el||!r) return;
+  const r = M[mj]; const el = byId('makeup'); if(!el||!r) return;
   el.innerHTML = `<div class="grid grid-2">
     <div><strong>Base/Correção</strong><br><span class="foot">${r.base}</span></div>
     <div><strong>Blush</strong><br><span class="foot">${r.blush}</span></div>
@@ -717,7 +763,6 @@ function renderMakeup(est){
 
 // ---------- Eventos & Persistência ----------
 function restore(){
-  // ano default
   byId('laudoYear').value=String(new Date().getFullYear());
   const raw=localStorage.getItem('colorimetria_form');
   if(raw){try{const v=JSON.parse(raw);
@@ -732,10 +777,22 @@ function restore(){
   const brandCol=localStorage.getItem('colorim_brandColor'); if(brandCol){byId('brandColor').value=brandCol;document.documentElement.style.setProperty('--brand',brandCol)}
   const theme=localStorage.getItem('colorim_theme'); if(theme==='editorial'){document.body.classList.add('theme-editorial');byId('styleSelect').value='editorial'}
   const dark=localStorage.getItem('colorim_dark')==='1'; applyDark(dark);
+  const pageBg=localStorage.getItem('colorim_pageBg'); if(pageBg){ document.documentElement.style.setProperty('--page', pageBg); setThemeColor(pageBg); }
 }
 
 // uploads
-byId('logoFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_logo',data);setImg(byId('logoPreview'),data);if(!byId('laudo').classList.contains('hidden'))setImg(byId('logoOut'),data)});
+byId('logoFile').addEventListener('change',async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const data=await readFileAsDataURL(f);
+  localStorage.setItem('colorim_logo',data);
+  setImg(byId('logoPreview'),data);
+  if(!byId('laudo').classList.contains('hidden')) setImg(byId('logoOut'),data);
+  // auto-ajustar fundo pela logo
+  try{
+    const hex=await extractBgFromDataURL(data);
+    if(hex){ setPageBg(hex); toast('Fundo ajustado pela logo: '+hex,'success'); }
+  }catch(err){ console.error(err); toast('Não foi possível ler a cor de fundo da logo.','error'); }
+});
 byId('fotoCliente').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_foto',data);setImg(byId('fotoClienteOut'),data)});
 byId('refPele').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_ref_pele',data);setImg(byId('imgPele'),data)});
 byId('refOlhos').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_ref_olhos',data);setImg(byId('imgOlhos'),data)});
@@ -751,16 +808,14 @@ document.getElementById('styleSelect').addEventListener('change',e=>{const v=e.t
 // dark mode
 byId('btnDark').addEventListener('click',()=>{applyDark(!document.body.classList.contains('dark'))});
 
-// gerar laudo / PDF / downloads
-byId('btnLaudo').addEventListener('click', e=>{e.preventDefault();try{generateLaudo();toast('Laudo gerado com sucesso! ✅','success');}catch(err){console.error(err);toast('Não foi possível gerar o laudo. Revise as respostas e tente novamente.','error');}});
-byId('btnPDF').addEventListener('click', e=>{e.preventDefault();try{window.print();toast('Abrindo visualização para PDF...','info');}catch(err){console.error(err);toast('Não foi possível abrir a impressão.','error');}});
-byId('btnDownloadHTML').addEventListener('click', e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
-byId('btnDownloadHTMLTop').addEventListener('click', e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
+// gerar laudo / PDF / downloads (com try/catch + toasts)
+byId('btnLaudo').addEventListener('click',e=>{e.preventDefault();try{generateLaudo();}catch(err){console.error(err);toast('Não foi possível gerar o laudo. Revise as respostas e tente novamente.','error');}});
+byId('btnPDF').addEventListener('click',e=>{e.preventDefault();try{window.print();toast('Abrindo visualização para PDF...','info');}catch(err){console.error(err);toast('Não foi possível abrir a impressão.','error');}});
+byId('btnDownloadHTML').addEventListener('click',e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
+byId('btnDownloadHTMLTop').addEventListener('click',e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
 
-// assinaturas
-byId('saveSigs').addEventListener('click',()=>{if(sigClient&&sigAnalyst){setImg(byId('sigClienteImg'),sigClient.toDataURL());setImg(byId('sigAnalistaImg'),sigAnalyst.toDataURL())}});
-byId('clearSigCliente').addEventListener('click',()=>{if(sigClient) sigClient.clear()});
-byId('clearSigAnalista').addEventListener('click',()=>{if(sigAnalyst) sigAnalyst.clear()});
+// restaurar fundo padrão
+byId('btnResetBg').addEventListener('click', ()=> resetPageBg());
 
 // init
 fillPalettes();
