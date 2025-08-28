@@ -1,137 +1,469 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Personal Colors – Questionário + Laudo</title>
-<link rel="icon" href="favicon.ico">
-<meta name="theme-color" content="#d8d2cf">
-<style>
-:root{--page:#d8d2cf;--ink:#111827;--muted:#6b7280;--card:#fff;--brand:#7c3aed}
-*{box-sizing:border-box} html,body{margin:0;background:var(--page);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-.wrap{max-width:1000px;margin:28px auto;padding:0 14px 60px}
-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
-.brandbox{display:flex;align-items:center;gap:10px} .brandbox img{max-height:40px;object-fit:contain}
-.h1{font-weight:800;font-size:20px} .muted{color:var(--muted);font-size:13px}
-.card{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.grid{display:grid;gap:12px} .g2{grid-template-columns:repeat(2,minmax(0,1fr))} .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-label{font-weight:600;display:block;margin-bottom:6px} input,select,textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
-.btn{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer} .p{background:var(--brand);color:#fff} .g{background:#fff;border:1px solid #e5e7eb}
-.row{display:flex;gap:10px;flex-wrap:wrap} .badge{border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px;font-size:12px;background:#fff}
-.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px} .sw{border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#fff}
-.chip{height:60px} .meta{padding:6px 8px;font-size:12px}
-.hidden{display:none !important} .toast{position:fixed;right:14px;bottom:14px;background:#111827;color:#fff;padding:10px 12px;border-radius:10px}
-@media print{body{background:#fff} .noprint{display:none !important} .wrap{max-width:none;padding:0} .card{border:0;box-shadow:none;border-radius:0} }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Colors — Ficha Completa + CAPA & QR</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <meta name="theme-color" content="#efeae6">
+  <style>
+    :root{
+      --page:#efeae6;
+      --ink:#111827;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --brand:#7c3aed;
+      --line:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:1120px;margin:28px auto;padding:0 16px 100px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+    .brandbox{display:flex;align-items:center;gap:12px}
+    .brandbox img{max-height:44px;object-fit:contain}
+    .title{font-weight:800;font-size:clamp(18px,4vw,24px)}
+    .muted{color:var(--muted);font-size:13px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(0,0,0,.05);padding:18px}
+    .grid{display:grid;gap:14px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    label{font-weight:600;display:block;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+    textarea{min-height:90px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{border:0;border-radius:12px;padding:12px 14px;font-weight:700;cursor:pointer}
+    .p{background:var(--brand);color:#fff}
+    .g{background:#fff;border:1px solid var(--line)}
+    .pill{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#fff}
+    .badge{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;background:#fff}
+    .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+    .swatch{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+    .swatch .chip{height:70px}
+    .swatch .meta{padding:8px 10px;font-size:12px;display:flex;gap:2px;flex-direction:column}
+    .photo{border:1px dashed var(--line);border-radius:12px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;min-height:220px}
+    .photo img{max-width:100%;max-height:260px;display:block}
+    .hidden{display:none !important}
+    .hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+    .toastwrap{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:9999}
+    .toast{background:#111827;color:#fff;padding:10px 12px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.1);opacity:0;transform:translateY(4px);transition:.2s}
+    .toast.on{opacity:1;transform:translateY(0)}
+
+    /* CAPA */
+    .cover{background:linear-gradient(180deg,var(--page),#fff);border:1px solid var(--line);border-radius:20px;padding:28px}
+    .cover-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+    .cover-brand{display:flex;gap:12px;align-items:center}
+    .cover-title{font-size:28px;font-weight:900;letter-spacing:.3px}
+    .cover-sub{color:var(--muted)}
+    .cover-hero{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:stretch}
+    .cover-box{border:1px solid var(--line);border-radius:16px;background:#fff;padding:16px;display:flex;flex-direction:column;justify-content:center}
+    .qrcol{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .qrbox{border:1px dashed var(--line);border-radius:12px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;min-height:180px}
+    .qrbox img{width:140px;height:140px}
+    .capainfo{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+    @media (max-width:860px){.cover-hero{grid-template-columns:1fr}}
+    @media print{
+      body{background:#fff}
+      .noprint{display:none !important}
+      .wrap{max-width:none;margin:0;padding:0}
+      .card{border:0;box-shadow:none;border-radius:0}
+      .page-break{page-break-before:always}
+    }
+  </style>
 </head>
 <body>
 <div class="wrap">
+  <div id="toasts" class="toastwrap"></div>
   <header class="noprint">
     <div class="brandbox">
       <img id="logoPreview" alt="logo">
-      <div><div class="h1" id="brandPreview">Colorimetria & Pantone</div><div class="muted" id="taglinePreview">Questionário + Laudo</div></div>
+      <div>
+        <div class="title" id="brandPreview">Personal Colors — Ficha Completa</div>
+        <div class="muted" id="taglinePreview">Questionário • Fotos • Laudo com Pantone • CAPA + QR</div>
+      </div>
     </div>
-    <div class="muted">v2 compacto</div>
+    <div class="row">
+      <span class="pill">v2.3 PRO + CAPA/QR</span>
+      <button class="btn g" id="btnDark">🌙</button>
+    </div>
   </header>
 
-  <section id="builder" class="card">
-    <div class="grid g3">
-      <div><label>Marca</label><input id="brandName" placeholder="Ex.: Erika Muniz – Personal Stylist"></div>
-      <div><label>Tagline</label><input id="tagline" placeholder="Ex.: Consultoria de Imagem & Estilo"></div>
-      <div><label>Logo (PNG/JPG)</label><input id="logoFile" type="file" accept="image/*"></div>
-    </div>
-    <div class="grid g3" style="margin-top:6px">
-      <div>
-        <label>Fundo da página (manual)</label>
-        <div class="row"><input id="pageBg" type="color" value="#d8d2cf" style="width:60px;padding:0;height:40px"><button id="applyBg" class="btn g">Aplicar</button><button id="resetBg" class="btn g">Padrão</button></div>
-        <div class="muted" id="bgNow">Fundo atual: #d8d2cf</div>
+  <!-- CAPA (gerada junto com o laudo) -->
+  <section id="capa" class="cover hidden">
+    <div class="cover-head">
+      <div class="cover-brand">
+        <img id="logoCover" alt="logo" style="max-height:56px">
+        <div>
+          <div class="cover-title" id="brandCover">Laudo de Colorimetria Pessoal</div>
+          <div class="cover-sub" id="taglineCover">Consultoria de Imagem & Estilo</div>
+        </div>
       </div>
-      <div><label>Cor da marca</label><input id="brandColor" type="color" value="#7c3aed"></div>
-      <div><label>Contato (opcional)</label><input id="contact" placeholder="email • fone • @insta"></div>
+      <div class="capainfo">
+        <span class="badge">Data: <b id="dataHojeCapa" style="margin-left:6px"></b></span>
+        <span class="badge">Laudo Nº&nbsp;<b id="laudoIdCapa"></b></span>
+      </div>
     </div>
-
-    <hr style="margin:14px 0;border:0;border-top:1px solid #e5e7eb">
-
-    <div class="grid g3">
-      <div><label>1. Bronzeia ou fica vermelha?</label><select id="q1"><option value="">—</option><option>Bronzeia facilmente</option><option>Fica vermelha antes</option></select></div>
-      <div><label>2. Fundo de pele</label><select id="q2"><option value="">—</option><option>Dourado/Oliva</option><option>Neutro</option><option>Rosado/Azulado</option></select></div>
-      <div><label>3. Acessórios</label><select id="q3"><option value="">—</option><option>Dourado</option><option>Prata</option><option>Ambos</option></select></div>
-      <div><label>4. Cabelo</label><select id="q4"><option value="">—</option><option>Dourados</option><option>Acinzentados</option><option>Avermelhados</option><option>Neutros</option></select></div>
-      <div><label>5. Olhos</label><select id="q5"><option value="">—</option><option>Quente (dourado/mel)</option><option>Neutro</option><option>Frio (acinzentado/azulado)</option></select></div>
-      <div><label>7. Contraste</label><select id="q7"><option value="">—</option><option>Alto</option><option>Médio</option><option>Baixo</option></select></div>
-      <div><label>10. Branco</label><select id="q10"><option value="">—</option><option>Branco gelo</option><option>Branco neve</option><option>Empate</option></select></div>
-      <div><label>11. Rosa</label><select id="q11"><option value="">—</option><option>Rosa pink</option><option>Coral</option><option>Empate</option></select></div>
-      <div><label>12. Azul × Verde</label><select id="q12"><option value="">—</option><option>Azul royal</option><option>Verde oliva</option><option>Empate</option></select></div>
-      <div><label>14. Preferência</label><select id="q14"><option value="">—</option><option>Discreta/Neutra</option><option>Vibrante/Intensa</option><option>Romântica/Pastel</option><option>Dramática/Profunda</option></select></div>
-      <div><label>Cliente</label><input id="cliente" placeholder="Nome do cliente"></div>
-      <div><label>Analista</label><input id="analista" placeholder="Seu nome"></div>
-    </div>
-    <div style="margin-top:10px" class="row">
-      <button id="gen" class="btn p">Gerar laudo</button>
-      <button id="pdf" class="btn g" disabled>Exportar PDF</button>
+    <div class="cover-hero">
+      <div class="cover-box">
+        <div class="muted">Cliente</div>
+        <div style="font-size:32px;font-weight:900;line-height:1.1" id="cliNomeCapa">—</div>
+        <div class="muted" id="identCapa" style="margin-top:8px"></div>
+      </div>
+      <div class="cover-box">
+        <div class="muted">QR Codes</div>
+        <div class="qrcol" style="margin-top:8px">
+          <div class="qrbox">
+            <div style="font-weight:700">Site / Instagram</div>
+            <div id="qrLink"></div>
+          </div>
+          <div class="qrbox">
+            <div style="font-weight:700">vCard</div>
+            <div id="qrVCard"></div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <a id="btnDownloadVCF" class="btn g" download="contato.vcf" href="#">Baixar vCard (.vcf)</a>
+        </div>
+      </div>
     </div>
   </section>
 
+  <!-- FORM: Marca & Config -->
+  <section class="card">
+    <h3 style="margin:0 0 8px">Identidade do Estúdio</h3>
+    <div class="grid g3">
+      <div><label>Marca/Estúdio</label><input id="brandName" placeholder="Ex.: Erika Muniz — Personal Stylist"></div>
+      <div><label>Tagline</label><input id="tagline" placeholder="Ex.: Consultoria de Imagem & Estilo"></div>
+      <div><label>Logo (PNG/JPG)</label><input id="logoFile" type="file" accept="image/*"></div>
+      <div><label>Cor da marca</label><input id="brandColor" type="color" value="#7c3aed"></div>
+      <div>
+        <label>Fundo da página</label>
+        <div class="row">
+          <input id="pageBgColor" type="color" value="#efeae6" style="width:56px;height:40px;padding:0">
+          <button class="btn g" id="btnApplyBg">Aplicar</button>
+          <button class="btn g" id="btnDetectBg">Pegar da LOGO</button>
+          <button class="btn g" id="btnResetBg">Padrão</button>
+        </div>
+        <div class="muted" id="bgNow">Atual: #efeae6</div>
+      </div>
+      <div><label>Analista</label><input id="analista" placeholder="Seu nome"></div>
+      <div><label>Site/Instagram (URL p/ QR)</label><input id="contactSocial" type="url" placeholder="https://instagram.com/seu@ ou site"></div>
+      <div><label>E-mail (vCard)</label><input id="contactEmail" type="email" placeholder="contato@exemplo.com"></div>
+      <div><label>Telefone (vCard)</label><input id="contactPhone" type="tel" placeholder="(xx) xxxxx-xxxx"></div>
+    </div>
+  </section>
+
+  <!-- FORM: Dados da Cliente -->
+  <section class="card">
+    <h3 style="margin:0 0 8px">Dados da Cliente</h3>
+    <div class="grid g3">
+      <div><label>Nome completo</label><input id="cliNome" placeholder="Nome e sobrenome"></div>
+      <div><label>Pronome</label><select id="cliPron"><option value="">—</option><option>ela/dela</option><option>ele/dele</option><option>elu/delu</option></select></div>
+      <div><label>Data de nascimento</label><input id="cliNasc" type="date"></div>
+      <div><label>E-mail</label><input id="cliEmail" type="email" placeholder="contato@..."></div>
+      <div><label>Telefone</label><input id="cliTel" type="tel" placeholder="(xx) xxxxx-xxxx"></div>
+      <div><label>Cidade/UF</label><input id="cliCidade" placeholder="Ex.: São Paulo/SP"></div>
+    </div>
+    <div class="grid g3">
+      <div><label>Data da sessão</label><input id="sessData" type="date"></div>
+      <div><label>Local</label><input id="sessLocal" placeholder="Estúdio / Online / Outro"></div>
+      <div><label>Indicação/Origem</label><input id="sessOrigem" placeholder="Instagram / Indicação / Site"></div>
+    </div>
+    <div class="grid g2">
+      <div><label>Objetivos</label><textarea id="cliObjetivos" placeholder="O que a cliente busca (ex.: paleta para trabalho, noivas, cartela cápsula)…"></textarea></div>
+      <div><label>Observações</label><textarea id="cliObs" placeholder="Alergias, preferências de tecidos/maquiagem, etc."></textarea></div>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <label style="display:flex;gap:8px;align-items:center"><input id="cliConsent" type="checkbox"> Consentimento de uso das fotos para o laudo (não-público).</label>
+    </div>
+  </section>
+
+  <!-- FORM: Fotos -->
+  <section class="card">
+    <h3 style="margin:0 0 8px">Fotos da Cliente (luz natural recomendada)</h3>
+    <div class="grid g4">
+      <div><label>Rosto neutro (cor)</label><input id="fRosto" type="file" accept="image/*"></div>
+      <div><label>Rosto em PB (contraste)</label><input id="fRostoPB" type="file" accept="image/*"></div>
+      <div><label>Olhos (close)</label><input id="fOlhos" type="file" accept="image/*"></div>
+      <div><label>Cabelo (close)</label><input id="fCabelo" type="file" accept="image/*"></div>
+    </div>
+    <div class="grid g2">
+      <div><label>Look de referência</label><input id="fLook" type="file" accept="image/*"></div>
+      <div><label>Maquiagem habitual (opcional)</label><input id="fMake" type="file" accept="image/*"></div>
+    </div>
+  </section>
+
+  <!-- FORM: Questionário -->
+  <section class="card">
+    <h3 style="margin:0 0 8px">Questionário de Colorimetria</h3>
+    <div class="grid g3">
+      <div><label>1. Bronzeia fácil ou fica vermelha antes?</label><select id="q1"><option value="">—</option><option>Bronzeia facilmente</option><option>Fica vermelha antes</option></select></div>
+      <div><label>2. Fundo de pele percebido</label><select id="q2"><option value="">—</option><option>Dourado/Oliva</option><option>Neutro</option><option>Rosado/Azulado</option></select></div>
+      <div><label>3. Acessórios que favorecem mais</label><select id="q3"><option value="">—</option><option>Dourado</option><option>Prata</option><option>Ambos</option></select></div>
+      <div><label>4. Cabelo — reflexos predominantes</label><select id="q4"><option value="">—</option><option>Dourados</option><option>Acinzentados</option><option>Avermelhados</option><option>Neutros</option></select></div>
+      <div><label>5. Olhos — pigmento</label><select id="q5"><option value="">—</option><option>Quente (dourado/mel)</option><option>Neutro</option><option>Frio (acinzentado/azulado)</option></select></div>
+      <div><label>7. Contraste geral (foto PB)</label><select id="q7"><option value="">—</option><option>Alto</option><option>Médio</option><option>Baixo</option></select></div>
+      <div><label>10. Branco: gelo (frio) × neve (quente)</label><select id="q10"><option value="">—</option><option>Branco gelo</option><option>Branco neve</option><option>Empate</option></select></div>
+      <div><label>11. Rosa: pink (frio) × coral (quente)</label><select id="q11"><option value="">—</option><option>Rosa pink</option><option>Coral</option><option>Empate</option></select></div>
+      <div><label>12. Azul royal (frio) × verde oliva (quente)</label><select id="q12"><option value="">—</option><option>Azul royal</option><option>Verde oliva</option><option>Empate</option></select></div>
+      <div><label>14. Preferência de paleta</label><select id="q14"><option value="">—</option><option>Discreta/Neutra</option><option>Vibrante/Intensa</option><option>Romântica/Pastel</option><option>Dramática/Profunda</option></select></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn p" id="btnLaudo">Gerar CAPA + Laudo</button>
+      <button class="btn g" id="btnPDF" disabled>Exportar PDF</button>
+      <button class="btn g" id="btnDownloadHTML">Baixar HTML (cópia)</button>
+    </div>
+  </section>
+
+  <!-- LAUDO -->
   <section id="laudo" class="hidden">
     <div class="card">
       <div class="row" style="justify-content:space-between;align-items:center">
-        <div class="brandbox"><img id="logoOut"><div><div class="h1" id="brandOut">Laudo</div><div class="muted" id="taglineOut"></div></div></div>
-        <div class="row"><span class="badge" id="dataHoje"></span><span class="badge" id="laudoId"></span></div>
+        <div class="brandbox">
+          <img id="logoOut" alt="logo">
+          <div>
+            <div class="title" id="brandOut">Laudo de Colorimetria</div>
+            <div class="muted" id="taglineOut"></div>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge" id="dataHoje"></span>
+          <span class="badge">Laudo Nº&nbsp;<b id="laudoId"></b></span>
+        </div>
       </div>
-      <div class="muted" id="ident"></div>
-      <div class="row" style="margin-top:6px"><span class="badge">Subtom: <b id="subtom"></b></span><span class="badge">Contraste: <b id="contraste"></b></span><span class="badge">Intensidade: <b id="intensidade"></b></span></div>
+      <div class="muted" id="identTop"></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Dados da Cliente</h3>
+        <div id="dadosCliente" style="display:grid;grid-template-columns:160px 1fr;gap:6px;font-size:14px"></div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 8px">Resumo do Resultado</h3>
+        <div class="row">
+          <span class="badge">Subtom: <b id="subtom"></b></span>
+          <span class="badge">Contraste: <b id="contraste"></b></span>
+          <span class="badge">Intensidade: <b id="intensidade"></b></span>
+        </div>
+        <div class="row" style="margin-top:6px"><span class="badge" style="background:#f1f5ff">Estação: <b id="estacao"></b></span></div>
+        <p class="muted" style="margin-top:6px">Use como ponto de partida. Valide ao vivo com tecidos/blocos sob luz natural.</p>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card photo"><img id="imgRosto" alt="Rosto cor"></div>
+      <div class="card photo"><img id="imgRostoPB" alt="Rosto PB"></div>
+    </div>
+    <div class="grid g3">
+      <div class="card photo"><img id="imgOlhos" alt="Olhos"></div>
+      <div class="card photo"><img id="imgCabelo" alt="Cabelo"></div>
+      <div class="card photo"><img id="imgLook" alt="Look"></div>
+    </div>
+
+    <div class="card page-break">
+      <h3 style="margin:0 0 8px">Paleta Final — Pantone (aprox.)</h3>
+      <div class="swatches" id="palFinal"></div>
+      <p class="muted">Códigos Pantone são aproximados para referência visual — confirme em leques oficiais conforme necessidade de impressão/tecido.</p>
     </div>
 
     <div class="card">
-      <h3 style="margin:0 0 8px">Estação sugerida</h3>
-      <div class="row"><span class="badge" id="estacao"></span></div>
+      <h3 style="margin:0 0 8px">Neutros & Metálicos</h3>
+      <div class="swatches" id="neutros"></div>
+      <div class="swatches" id="metalicos" style="margin-top:8px"></div>
     </div>
 
     <div class="card">
-      <h3 style="margin:0 0 8px">Paletas (referência visual)</h3>
+      <h3 style="margin:0 0 8px">Recomendações de Maquiagem</h3>
+      <div id="makeup"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px">Assinaturas</h3>
       <div class="grid g2">
-        <div><b>Primavera</b><div class="swatches" id="palPrimavera"></div></div>
-        <div><b>Verão</b><div class="swatches" id="palVerao"></div></div>
-        <div><b>Outono</b><div class="swatches" id="palOutono"></div></div>
-        <div><b>Inverno</b><div class="swatches" id="palInverno"></div></div>
+        <div>
+          <div class="muted">Cliente</div>
+          <canvas id="sigCliente" class="photo" style="height:160px"></canvas>
+          <div class="row noprint"><button class="btn g" id="clearSigCliente">Limpar</button></div>
+        </div>
+        <div>
+          <div class="muted">Analista</div>
+          <canvas id="sigAnalista" class="photo" style="height:160px"></canvas>
+          <div class="row noprint"><button class="btn g" id="clearSigAnalista">Limpar</button></div>
+        </div>
       </div>
+      <div class="row noprint"><button class="btn p" id="saveSigs">Salvar assinaturas no laudo</button></div>
     </div>
 
-    <div class="card noprint"><button class="btn p" onclick="window.print()">Exportar PDF</button></div>
+    <div class="card noprint" style="text-align:right">
+      <button class="btn p" onclick="window.print()">Exportar PDF</button>
+    </div>
   </section>
 </div>
 
-<div id="toast" class="toast hidden"></div>
-
 <script>
 const $=id=>document.getElementById(id);
-const showToast=(t)=>{const el=$('toast');el.textContent=t;el.classList.remove('hidden');setTimeout(()=>el.classList.add('hidden'),2200)};
-const setThemeColor=(hex)=>{let m=document.querySelector('meta[name=theme-color]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=hex};
-const setPageBg=(hex)=>{document.documentElement.style.setProperty('--page',hex);localStorage.setItem('pageBg',hex);$('bgNow').textContent='Fundo atual: '+hex;setThemeColor(hex)};
-const readFile=(f)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
+function toast(t){const w=$('toasts');const el=document.createElement('div');el.className='toast';el.textContent=t;w.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'));setTimeout(()=>{el.classList.remove('on');setTimeout(()=>el.remove(),250);},2800)}
+function setThemeColor(hex){let m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=hex}
+function setPageBg(hex){document.documentElement.style.setProperty('--page',hex);localStorage.setItem('pc_pageBg',hex);$('bgNow').textContent='Atual: '+hex;setThemeColor(hex)}
+function readAsDataURL(file){return new Promise((ok,err)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=err;r.readAsDataURL(file)})}
+function putImg(id,data){const el=$(id);if(!el)return;el.src=data;el.classList.remove('hidden')}
 
-async function extractBg(dataURL){return new Promise((ok)=>{const img=new Image();img.onload=()=>{try{const w=img.naturalWidth,h=img.naturalHeight,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(img,0,0);const m=Math.max(1,Math.floor(Math.min(w,h)*0.1));function pick(x0,y0,w2,h2){const d=x.getImageData(x0,y0,w2,h2).data;const a=[];for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const Y=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];if(Y>150)a.push([d[i],d[i+1],d[i+2]])}return a}let s=[...pick(0,0,m,m),...pick(w-m,0,m,m),...pick(0,h-m,m,m),...pick(w-m,h-m,m,m)];if(s.length<64){s=[...s,...pick(0,0,w,m),...pick(0,h-m,w,m),...pick(0,0,m,h),...pick(w-m,0,m,h)]}if(!s.length){ok(null);return}const rs=s.map(v=>v[0]).sort((a,b)=>a-b), gs=s.map(v=>v[1]).sort((a,b)=>a-b), bs=s.map(v=>v[2]).sort((a,b)=>a-b);const med=a=>a[Math.floor(a.length/2)];const hex='#'+[med(rs),med(gs),med(bs)].map(v=>v.toString(16).padStart(2,'0')).join('');ok(hex)}catch(e){console.error(e);ok(null)}};img.onerror=()=>ok(null);img.src=dataURL})}
+// QR helpers
+function qrImg(data){const img=new Image();img.width=140;img.height=140;img.alt='QR';img.src='https://api.qrserver.com/v1/create-qr-code/?size=140x140&data='+encodeURIComponent(data);return img}
+function genVCard(v){const L=['BEGIN:VCARD','VERSION:3.0']; if(v.analista){const parts=v.analista.trim().split(' ');L.push(`N:${parts.slice(1).join(' ')};${parts[0]||''};;;`); L.push(`FN:${v.analista}`)} else if(v.brand){L.push(`FN:${v.brand}`)} if(v.brand) L.push(`ORG:${v.brand}`); if(v.phone) L.push(`TEL;TYPE=CELL,VOICE:${v.phone}`); if(v.email) L.push(`EMAIL;TYPE=INTERNET:${v.email}`); if(v.social) L.push(`URL:${v.social}`); L.push('END:VCARD'); return L.join('\n');}
+function setupQRs(v){const linkWrap=$('qrLink');const vcardWrap=$('qrVCard'); if(linkWrap) linkWrap.innerHTML=''; if(vcardWrap) vcardWrap.innerHTML=''; if(v.social && linkWrap){linkWrap.appendChild(qrImg(v.social))} const vcf=genVCard(v); if(vcardWrap) vcardWrap.appendChild(qrImg(vcf)); const a=$('btnDownloadVCF'); if(a){a.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(vcf);}}
 
-function swatch(o){return `<div class='sw'><div class='chip' style='background:${o.hex}'></div><div class='meta'><b>${o.name}</b><div>${o.hex}</div></div></div>`}
-const pal={Primavera:[{name:'Coral vivo',hex:'#FF6F61'},{name:'Amarelo',hex:'#FFC928'},{name:'Aqua',hex:'#64D8CB'},{name:'Menta',hex:'#9FD3C7'}],Verao:[{name:'Rosa frio',hex:'#F2A7C3'},{name:'Malva',hex:'#B784A7'},{name:'Azul pó',hex:'#A9C1D9'},{name:'Lavanda',hex:'#C7B7E5'}],Outono:[{name:'Terracota',hex:'#C65D3A'},{name:'Mostarda',hex:'#D4A017'},{name:'Oliva',hex:'#6B8E23'},{name:'Teal',hex:'#2A7F62'}],Inverno:[{name:'Azul profundo',hex:'#0F4C81'},{name:'Cobalto',hex:'#1F45FC'},{name:'Borgonha',hex:'#6B0F1A'},{name:'Fúcsia',hex:'#D1006C'}]};
-function renderPal(){$('palPrimavera').innerHTML=pal.Primavera.map(swatch).join('');$('palVerao').innerHTML=pal.Verao.map(swatch).join('');$('palOutono').innerHTML=pal.Outono.map(swatch).join('');$('palInverno').innerHTML=pal.Inverno.map(swatch).join('')}
+// Detectar cor de fundo clara da logo
+async function extractBgFromLogo(dataURL){return new Promise(done=>{const img=new Image();img.onload=()=>{try{const w=img.naturalWidth,h=img.naturalHeight,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(img,0,0);const m=Math.max(1,Math.floor(Math.min(w,h)*0.1));function pick(x0,y0,w2,h2){const d=x.getImageData(x0,y0,w2,h2).data;const a=[];for(let i=0;i<d.length;i+=4){const A=d[i+3];if(A<200)continue;const r=d[i],g=d[i+1],b=d[i+2];const Y=0.2126*r+0.7152*g+0.0722*b;if(Y>150)a.push([r,g,b]);}return a}let s=[...pick(0,0,m,m),...pick(w-m,0,m,m),...pick(0,h-m,m,m),...pick(w-m,h-m,m,m)];if(s.length<64){s=[...s,...pick(0,0,w,m),...pick(0,h-m,w,m),...pick(0,0,m,h),...pick(w-m,0,m,h)]}if(!s.length){done(null);return}const rs=s.map(v=>v[0]).sort((a,b)=>a-b),gs=s.map(v=>v[1]).sort((a,b)=>a-b),bs=s.map(v=>v[2]).sort((a,b)=>a-b);const med=a=>a[Math.floor(a.length/2)];const hex='#'+[med(rs),med(gs),med(bs)].map(v=>v.toString(16).padStart(2,'0')).join('');done(hex)}catch(e){console.error(e);done(null)}};img.onerror=()=>done(null);img.src=dataURL})}
 
-const rules={Q1:{'Bronzeia facilmente':[1,0],'Fica vermelha antes':[0,1]},Q2:{'Dourado/Oliva':[1,0],'Neutro':[0.5,0.5],'Rosado/Azulado':[0,1]},Q3:{'Dourado':[1,0],'Prata':[0,1],'Ambos':[0.5,0.5]},Q4:{'Dourados':[1,0],'Acinzentados':[0,1],'Avermelhados':[1,0],'Neutros':[0.5,0.5]},Q5:{'Quente (dourado/mel)':[1,0],'Neutro':[0.5,0.5],'Frio (acinzentado/azulado)':[0,1]},Q10:{'Branco neve':[1,0],'Branco gelo':[0,1],'Empate':[0.5,0.5]},Q11:{'Coral':[1,0],'Rosa pink':[0,1],'Empate':[0.5,0.5]},Q12:{'Verde oliva':[1,0],'Azul royal':[0,1],'Empate':[0.5,0.5]}};
-function score(map){let w=0,c=0;for(const k in rules){const a=map[k];if(a&&rules[k][a]){w+=rules[k][a][0];c+=rules[k][a][1];}}return{w,c}}
-function dom(sc){if(sc.w>sc.c+1)return'Warm';if(sc.c>sc.w+1)return'Cool';return'Neutro'}
-function contrast(v){return v||'Médio'} function intensity(v){return (v==='Vibrante/Intensa'||v==='Dramática/Profunda')?'Alta':'Baixa'}
-function season(d,ctr,int){const t={'Warm|Alto|Alta':'Outono Profundo','Warm|Alto|Baixa':'Outono Quente','Warm|Baixo|Alta':'Primavera Quente','Warm|Baixo|Baixa':'Primavera Clara','Cool|Alto|Alta':'Inverno Frio','Cool|Alto|Baixa':'Inverno Suave','Cool|Baixo|Alta':'Verão Frio','Cool|Baixo|Baixa':'Verão Suave'}; if(d==='Neutro'){if(ctr==='Alto')return 'Intermediária (tende a Inverno/Outono)'; if(ctr==='Baixo') return 'Intermediária (tende a Verão/Primavera)'; return 'Intermediária'} return t[`${d}|${ctr}|${int}`]||'Intermediária'}
+// Paletas base
+const BASE=[
+  {est:'Primavera', nome:'Coral vivo',hex:'#FF6F61',pantone:'16-1546'},
+  {est:'Primavera', nome:'Amarelo quente',hex:'#FFC928',pantone:'123 C'},
+  {est:'Primavera', nome:'Aqua',hex:'#64D8CB',pantone:'3242 C'},
+  {est:'Primavera', nome:'Menta',hex:'#9FD3C7',pantone:'337 C'},
+  {est:'Verão', nome:'Rosa frio',hex:'#F2A7C3',pantone:'699 C'},
+  {est:'Verão', nome:'Malva',hex:'#B784A7',pantone:'7440 C'},
+  {est:'Verão', nome:'Azul pó',hex:'#A9C1D9',pantone:'544 C'},
+  {est:'Verão', nome:'Lavanda',hex:'#C7B7E5',pantone:'7443 C'},
+  {est:'Outono', nome:'Terracota',hex:'#C65D3A',pantone:'7572 C'},
+  {est:'Outono', nome:'Mostarda',hex:'#D4A017',pantone:'7555 C'},
+  {est:'Outono', nome:'Oliva',hex:'#6B8E23',pantone:'7497 C'},
+  {est:'Outono', nome:'Teal',hex:'#2A7F62',pantone:'7716 C'},
+  {est:'Inverno', nome:'Azul profundo',hex:'#0F4C81',pantone:'19-4052'},
+  {est:'Inverno', nome:'Cobalto',hex:'#1F45FC',pantone:'2935 C'},
+  {est:'Inverno', nome:'Borgonha',hex:'#6B0F1A',pantone:'222 C'},
+  {est:'Inverno', nome:'Fúcsia',hex:'#D1006C',pantone:'213 C'}
+];
+const NEUTROS=[
+  {nome:'Branco neve',hex:'#FDFDFB',pantone:'—'},{nome:'Off-white',hex:'#F7F4ED',pantone:'7499 C'},{nome:'Marfim',hex:'#F8F5E1',pantone:'7499 C'},
+  {nome:'Bege',hex:'#D9CBB5',pantone:'468 C'},{nome:'Taupe',hex:'#B6A28E',pantone:'Warm Gray 3 C'},
+  {nome:'Camel',hex:'#C19A6B',pantone:'728 C'},{nome:'Cinza médio',hex:'#9AA0A6',pantone:'444 C'},{nome:'Carvão',hex:'#33363F',pantone:'432 C'}
+];
+const METALICOS=[
+  {nome:'Dourado (ref.)',hex:'#D4AF37',pantone:'Metallic'},{nome:'Prateado (ref.)',hex:'#C0C0C0',pantone:'Metallic'},{nome:'Rose Gold (ref.)',hex:'#B76E79',pantone:'Metallic'}
+];
+function swatchEl(o){const d=document.createElement('div');d.className='swatch';d.innerHTML=`<div class="chip" style="background:${o.hex}"></div><div class="meta"><strong>${o.nome||o.name||''}</strong><span>${o.hex}</span>${o.pantone?`<span>Pantone ${o.pantone}</span>`:''}</div>`;return d}
+function renderSwatches(container,items){container.innerHTML='';items.forEach(i=>container.appendChild(swatchEl(i)))}
 
-$('applyBg').onclick=()=>{setPageBg($('pageBg').value);showToast('Fundo atualizado')};
-$('resetBg').onclick=()=>{setPageBg('#d8d2cf');showToast('Fundo restaurado')};
+// Lógica de decisão
+const RULES={Q1:{'Bronzeia facilmente':[1,0],'Fica vermelha antes':[0,1]},Q2:{'Dourado/Oliva':[1,0],'Neutro':[0.5,0.5],'Rosado/Azulado':[0,1]},Q3:{'Dourado':[1,0],'Prata':[0,1],'Ambos':[0.5,0.5]},Q4:{'Dourados':[1,0],'Acinzentados':[0,1],'Avermelhados':[1,0],'Neutros':[0.5,0.5]},Q5:{'Quente (dourado/mel)':[1,0],'Neutro':[0.5,0.5],'Frio (acinzentado/azulado)':[0,1]},Q10:{'Branco neve':[1,0],'Branco gelo':[0,1],'Empate':[0.5,0.5]},Q11:{'Coral':[1,0],'Rosa pink':[0,1],'Empate':[0.5,0.5]},Q12:{'Verde oliva':[1,0],'Azul royal':[0,1],'Empate':[0.5,0.5]}};
+function scoreWarmCool(v){let w=0,c=0;for(const k in RULES){const a=v[k];if(a&&RULES[k][a]){w+=RULES[k][a][0];c+=RULES[k][a][1];}}return{w,c}}
+function dominance({w,c}){if(w>c+1)return'Warm';if(c>w+1)return'Cool';return'Neutro'}
+function contrastLabel(v){return v||'Médio'}
+function intensityLabel(v){return (v==='Vibrante/Intensa'||v==='Dramática/Profunda')?'Alta':'Baixa'}
+function decideSeason(dom,ctr,int){const t={'Warm|Alto|Alta':'Outono Profundo','Warm|Alto|Baixa':'Outono Quente','Warm|Baixo|Alta':'Primavera Quente','Warm|Baixo|Baixa':'Primavera Clara','Cool|Alto|Alta':'Inverno Frio','Cool|Alto|Baixa':'Inverno Suave','Cool|Baixo|Alta':'Verão Frio','Cool|Baixo|Baixa':'Verão Suave'};if(dom==='Neutro'){if(ctr==='Alto')return'Intermediária (tende a Inverno/Outono)';if(ctr==='Baixo')return'Intermediária (tende a Verão/Primavera)';return'Intermediária'}return t[`${dom}|${ctr}|${int}`]||'Intermediária'}
+function major(est){if(/Primavera/.test(est))return'Primavera';if(/Verão/.test(est))return'Verão';if(/Outono/.test(est))return'Outono';if(/Inverno/.test(est))return'Inverno';return'Intermediária'}
+function renderMakeup(est){const mj=major(est);const M={'Primavera':{base:'Subtom quente neutro a dourado; leve/natural.',blush:'Pêssego, coral suave.',olhos:'Dourado, bronze claro, oliva; delineador marrom.',labios:'Coral, pêssego, vermelho tomate.'},'Verão':{base:'Frio/neutro-frio; leve/sedoso.',blush:'Rosa chá, malva suave.',olhos:'Taupe, cinza frio, azul pó; delineador grafite.',labios:'Rosa frio, framboesa suave.'},'Outono':{base:'Quente/oliva; natural/acetinado.',blush:'Terracota, pêssego queimado.',olhos:'Cobre, bronze, oliva, teal; delineador marrom.',labios:'Terracota, tijolo, caramelo.'},'Inverno':{base:'Frio/neutro; cobertura média.',blush:'Rosa frio, framboesa.',olhos:'Preto/grafite, marinho, prata; esmeralda fria.',labios:'Fúcsia, cereja, bordô.'},'Intermediária':{base:'Neutro; ajustar ao contraste.',blush:'Pêssego ↔ rosa chá.',olhos:'Taupe, bronze suave, sálvia.',labios:'Coral ↔ rosa (evite extremos com contraste baixo).'}}; const r=M[mj]; const el=$('makeup'); if(!el||!r)return; el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px"><div><b>Base/Correção</b><br><span class="muted">${r.base}</span></div><div><b>Blush</b><br><span class="muted">${r.blush}</span></div><div><b>Olhos</b><br><span class="muted">${r.olhos}</span></div><div><b>Lábios</b><br><span class="muted">${r.labios}</span></div></div>`}
+function fillFinalPalette(est, contr){const mj=major(est);let items=[];if(mj==='Intermediária'){const pref=contr==='Alto'?['Inverno','Outono']:(contr==='Baixo'?['Verão','Primavera']:['Primavera','Verão']);items=BASE.filter(x=>pref.includes(x.est)).slice(0,12)}else{items=BASE.filter(x=>x.est===mj)};renderSwatches($('palFinal'), items);}
+function buildClienteTable(v){const t=$('dadosCliente');const L=(k,v)=>`<div class="muted">${k}</div><div>${v||'—'}</div>`;t.innerHTML=[
+  L('Cliente', v.cliNome),
+  L('Pronome', v.cliPron),
+  L('Nascimento', v.cliNasc && new Date(v.cliNasc).toLocaleDateString('pt-BR')),
+  L('E-mail', v.cliEmail),
+  L('Telefone', v.cliTel),
+  L('Cidade/UF', v.cliCidade),
+  L('Sessão', v.sessData && new Date(v.sessData).toLocaleDateString('pt-BR')),
+  L('Local', v.sessLocal),
+  L('Origem', v.sessOrigem),
+  L('Objetivos', v.cliObjetivos),
+  L('Observações', v.cliObs),
+  L('Consentimento de fotos', v.cliConsent?'Sim':'Não'),
+].join('') }
+function SigPad(canvas){const ctx=canvas.getContext('2d');ctx.lineWidth=2;ctx.lineCap='round';ctx.strokeStyle='#111827';let drawing=false,prev=null;function pos(e){const r=canvas.getBoundingClientRect();const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;return {x,y}}function start(e){drawing=true;prev=pos(e)}function move(e){if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(p.x,p.y);ctx.stroke();prev=p}function end(){drawing=false}canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);window.addEventListener('pointerup',end);canvas.addEventListener('touchstart',e=>{e.preventDefault();start(e)},{passive:false});canvas.addEventListener('touchmove',e=>{e.preventDefault();move(e)},{passive:false});window.addEventListener('touchend',end);return {clear:()=>ctx.clearRect(0,0,canvas.width,canvas.height), toDataURL:()=>canvas.toDataURL('image/png')}}
+
+let sigC,sigA;
+
+// Tema e fundo
+const btnDark=$('btnDark'); btnDark.onclick=()=>{document.body.classList.toggle('dark'); const on=document.body.classList.contains('dark'); localStorage.setItem('pc_dark', on?'1':'0'); btnDark.textContent=on?'☀️':'🌙'}; (function(){ if(localStorage.getItem('pc_dark')==='1'){document.body.classList.add('dark'); btnDark.textContent='☀️'} })();
+$('btnApplyBg').onclick=()=>{setPageBg($('pageBgColor').value);toast('Fundo atualizado')};
+$('btnResetBg').onclick=()=>{setPageBg('#efeae6');toast('Fundo padrão')};
 $('brandColor').oninput=(e)=>{document.documentElement.style.setProperty('--brand',e.target.value)};
-$('logoFile').onchange=async(e)=>{const f=e.target.files[0];if(!f)return;const data=await readFile(f);localStorage.setItem('logo',data);$('logoPreview').src=data;$('logoOut').src=data;const hex=await extractBg(data);if(hex){setPageBg(hex);showToast('Fundo pela logo: '+hex)}else{showToast('Não deu para detectar o fundo da logo')}};
+$('btnDetectBg').onclick=async()=>{const data=localStorage.getItem('pc_logo');if(!data){toast('Carregue uma logo primeiro');return}const hex=await extractBgFromLogo(data);if(hex){setPageBg(hex);toast('Fundo ajustado: '+hex)}else{toast('Não foi possível detectar a cor da logo')}};
 
-function pad3(n){return String(n).padStart(3,'0')} function nextSeq(y){const k='seq_'+y;let n=+localStorage.getItem(k)||0;localStorage.setItem(k,++n);return n}
-$('gen').onclick=()=>{const v={Q1:$('q1').value,Q2:$('q2').value,Q3:$('q3').value,Q4:$('q4').value,Q5:$('q5').value,Q7:$('q7').value,Q10:$('q10').value,Q11:$('q11').value,Q12:$('q12').value,Q14:$('q14').value};const s=score(v);const D=dom(s),C=contrast(v.Q7),I=intensity(v.Q14);const est=season(D,C,I);const now=new Date();const y=String(now.getFullYear());const id='LA-'+y+'-'+pad3(nextSeq(y));$('brandOut').textContent=$('brandName').value||'Laudo';$('taglineOut').textContent=$('tagline').value||'Colorimetria & Pantone';$('brandPreview').textContent=$('brandOut').textContent;$('taglinePreview').textContent=$('taglineOut').textContent;$('dataHoje').textContent=now.toLocaleDateString('pt-BR');$('laudoId').textContent=id;$('ident').textContent=[$('cliente').value&&('Cliente: '+$('cliente').value),$('analista').value&&('Analista: '+$('analista').value),$('contact').value].filter(Boolean).join(' • ');$('subtom').textContent=D;$('contraste').textContent=C;$('intensidade').textContent=I;$('estacao').textContent=est;renderPal();$('laudo').classList.remove('hidden');$('pdf').disabled=false;window.scrollTo({top:$('laudo').offsetTop-8,behavior:'smooth'});showToast('Laudo gerado ✅')};
-$('pdf').onclick=(e)=>{e.preventDefault();window.print()};
+// Uploads
+$('logoFile').onchange=async(e)=>{const f=e.target.files[0];if(!f)return;const data=await readAsDataURL(f);localStorage.setItem('pc_logo',data);$('logoPreview').src=data;};
+['fRosto','fRostoPB','fOlhos','fCabelo','fLook','fMake'].forEach(id=>{const key='pc_'+id;$(id).addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readAsDataURL(f);localStorage.setItem(key,data);})});
 
-(function init(){const bg=localStorage.getItem('pageBg');if(bg){document.documentElement.style.setProperty('--page',bg);$('pageBg').value=bg;$('bgNow').textContent='Fundo atual: '+bg} renderPal();})();
+// Gerar laudo + capa
+$('btnLaudo').onclick=()=>{ 
+  const v={
+    brand:$('brandName').value.trim(),tagline:$('tagline').value.trim(),analista:$('analista').value.trim(),
+    social:$('contactSocial').value.trim(),email:$('contactEmail').value.trim(),phone:$('contactPhone').value.trim(),
+    cliNome:$('cliNome').value.trim(),cliPron:$('cliPron').value,cliNasc:$('cliNasc').value,cliEmail:$('cliEmail').value.trim(),cliTel:$('cliTel').value.trim(),cliCidade:$('cliCidade').value.trim(),
+    sessData:$('sessData').value,sessLocal:$('sessLocal').value.trim(),sessOrigem:$('sessOrigem').value.trim(),cliObjetivos:$('cliObjetivos').value.trim(),cliObs:$('cliObs').value.trim(),cliConsent:$('cliConsent').checked,
+    Q1:$('q1').value,Q2:$('q2').value,Q3:$('q3').value,Q4:$('q4').value,Q5:$('q5').value,Q7:$('q7').value,Q10:$('q10').value,Q11:$('q11').value,Q12:$('q12').value,Q14:$('q14').value
+  };
+  const sc=scoreWarmCool(v); const D=dominance(sc); const C=contrastLabel(v.Q7); const I=intensityLabel(v.Q14); const est=decideSeason(D,C,I);
+
+  const now=new Date();
+  $('dataHoje').textContent=now.toLocaleDateString('pt-BR');
+  $('dataHojeCapa').textContent=$('dataHoje').textContent;
+  const y=String(now.getFullYear()); const k='pc_seq_'+y; let n=parseInt(localStorage.getItem(k)||'0',10)||0; n++; localStorage.setItem(k,String(n));
+  const lid='LA-'+y+'-'+String(n).padStart(3,'0');
+  $('laudoId').textContent=lid; $('laudoIdCapa').textContent=lid;
+
+  // Marca
+  $('brandOut').textContent=v.brand||'Laudo de Colorimetria'; $('taglineOut').textContent=v.tagline||'Colorimetria pessoal';
+  $('brandCover').textContent=v.brand||'Laudo de Colorimetria Pessoal'; $('taglineCover').textContent=v.tagline||'Consultoria de Imagem & Estilo';
+  $('brandPreview').textContent=$('brandCover').textContent; $('taglinePreview').textContent=$('taglineCover').textContent;
+
+  // Cliente
+  $('identTop').textContent=['Cliente: '+(v.cliNome||'—'), v.analista && ('Analista: '+v.analista)].filter(Boolean).join(' • ');
+  $('cliNomeCapa').textContent=v.cliNome||'—';
+  $('identCapa').textContent=[v.analista && ('Analista: '+v.analista), v.social, v.email, v.phone].filter(Boolean).join(' • ');
+
+  // Badges
+  $('subtom').textContent=D; $('contraste').textContent=C; $('intensidade').textContent=I; $('estacao').textContent=est;
+
+  // Tabela cliente
+  buildClienteTable(v);
+
+  // Imagens
+  const logo=localStorage.getItem('pc_logo'); if(logo){$('logoOut').src=logo; $('logoPreview').src=logo; $('logoCover').src=logo;}
+  const imgs={imgRosto:'pc_fRosto',imgRostoPB:'pc_fRostoPB',imgOlhos:'pc_fOlhos',imgCabelo:'pc_fCabelo',imgLook:'pc_fLook'}; 
+  for(const id in imgs){const data=localStorage.getItem(imgs[id]); if(data) putImg(id,data)}
+
+  // Paletas
+  fillFinalPalette(est,C);
+  renderSwatches($('neutros'), NEUTROS);
+  renderSwatches($('metalicos'), METALICOS);
+  renderMakeup(est);
+
+  // QR + vCard
+  setupQRs({brand:v.brand,analista:v.analista,phone:v.phone,email:v.email,social:v.social});
+
+  // Mostrar
+  $('capa').classList.remove('hidden');
+  $('laudo').classList.remove('hidden');
+  $('btnPDF').disabled=false;
+  window.scrollTo({top:$('capa').offsetTop-8,behavior:'smooth'});
+
+  localStorage.setItem('pc_last', JSON.stringify(v));
+  toast('Capa e laudo gerados ✅');
+};
+
+$('btnPDF').onclick=(e)=>{e.preventDefault();window.print()};
+$('btnDownloadHTML').onclick=()=>{const blob=new Blob([document.documentElement.outerHTML],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='personalcolors_pro_capa_qr.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)};
+
+// Assinaturas
+function initSigPads(){sigC=SigPad($('sigCliente')); sigA=SigPad($('sigAnalista')); $('clearSigCliente').onclick=()=>sigC.clear(); $('clearSigAnalista').onclick=()=>sigA.clear(); $('saveSigs').onclick=()=>toast('As assinaturas serão impressas no PDF (canvas)')}
+initSigPads();
+
+// Restaurar preferências
+(function restore(){
+  const bg=localStorage.getItem('pc_pageBg'); if(bg){document.documentElement.style.setProperty('--page',bg); $('pageBgColor').value=bg; $('bgNow').textContent='Atual: '+bg; setThemeColor(bg)}
+  const raw=localStorage.getItem('pc_last'); if(raw){try{const v=JSON.parse(raw);
+    ['brandName','tagline','analista','cliNome','cliEmail','cliTel','cliCidade','sessLocal','sessOrigem','cliObjetivos','cliObs','contactSocial','contactEmail','contactPhone'].forEach(id=>{if(v[id]) $(id).value=v[id]});
+    if(v.cliPron) $('cliPron').value=v.cliPron;
+    if(v.cliNasc) $('cliNasc').value=v.cliNasc;
+    if(v.sessData) $('sessData').value=v.sessData;
+    if(v.cliConsent) $('cliConsent').checked=true;
+    ['q1','q2','q3','q4','q5','q7','q10','q11','q12','q14'].forEach(id=>{const key=id.toUpperCase(); if(v[key]) $(id).value=v[key]});
+  }catch(e){}}
+})();
 </script>
 </body>
 </html>
