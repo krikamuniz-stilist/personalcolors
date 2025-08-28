@@ -1,825 +1,137 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Colorimetria & Pantone – Questionário + Laudo</title>
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <meta name="theme-color" content="#f6f7fb">
-  <style>
-    :root{
-      --card:#ffffff;
-      --ink:#111827;
-      --muted:#6b7280;
-      --brand:#7c3aed; /* atualizado pelo seletor */
-      --page:#f6f7fb;  /* fundo da página (padrão), pode vir da logo */
-    }
-    html,body{margin:0;padding:0;background:var(--page, #f6f7fb);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    body.theme-editorial{font-family:Georgia, "Times New Roman", Times, serif;letter-spacing:.1px}
-    body.theme-editorial h1,body.theme-editorial h2,body.theme-editorial h3,body.theme-editorial .brandname{font-family:Georgia, "Times New Roman", Times, serif}
-    .wrap{max-width:1100px;margin:32px auto;padding:0 16px 80px}
-    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
-    .brandbox{display:flex;align-items:center;gap:12px}
-    .brandbox img{max-height:42px;object-fit:contain}
-    .brandname{font-weight:800;font-size:clamp(18px,4vw,24px);letter-spacing:.2px}
-    .tagline{color:var(--muted);font-size:13px}
-    .pill{font-size:12px;border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px;color:#374151;background:#fff}
-    .head-actions{display:flex;gap:8px;align-items:center}
-
-    .grid{display:grid;gap:16px}
-    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .card{background:var(--card);border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 1px 2px rgba(0,0,0,.04);padding:20px}
-    label{font-weight:600;display:block;margin-bottom:6px}
-    select, input[type="text"], input[type="tel"], input[type="email"], input[type="url"], input[type="color"], textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;color:var(--ink);outline:none}
-    textarea{min-height:80px;resize:vertical}
-    .actions{display:flex;gap:12px;flex-wrap:wrap}
-    button, .btnlike{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;text-decoration:none}
-    .primary{background:var(--brand);color:#fff}
-    .ghost{background:#fff;border:1px solid #e5e7eb;color:#111}
-    .success{background:#22c55e;color:#fff}
-    .danger{background:#ef4444;color:#fff}
-    .muted{color:var(--muted);font-size:14px}
-    .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-    .swatch{border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;background:#fff}
-    .swatch .chip{height:70px}
-    .swatch .meta{padding:8px 10px;font-size:12px;display:flex;flex-direction:column;gap:2px}
-    .badge{display:inline-flex;gap:6px;align-items:center;border-radius:999px;padding:6px 10px;font-size:12px;border:1px solid #e5e7eb;background:#fff}
-    .bad-warm{background:#fff7ed;border-color:#fed7aa}
-    .bad-cool{background:#eff6ff;border-color:#bfdbfe}
-    .bad-neutral{background:#f8fafc;border-color:#e2e8f0}
-    .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .compare-block{border-radius:14px;border:1px dashed #d1d5db;padding:12px;background:#fafafa}
-    .compare-title{font-weight:700;margin-bottom:6px}
-    .foot{font-size:12px;color:#6b7280}
-    .hidden{display:none !important}
-    .photo{border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
-    .photo img{max-width:100%;max-height:220px;display:block}
-    .sigbox{display:grid;gap:10px}
-    .sigrow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .sig{border:1px dashed #cbd5e1;border-radius:12px;background:#fff;height:160px}
-    .siglabel{font-size:12px;color:#64748b}
-
-    .refgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .refitem{border:1px dashed #d1d5db;border-radius:12px;padding:8px;background:#fff}
-    .refitem img{width:100%;height:200px;object-fit:cover;border-radius:8px}
-
-    /* ---- Toasts ---- */
-    .toastwrap{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:9999}
-    .toast{background:#111827;color:#fff;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;opacity:0;transform:translateY(-10px);transition:opacity .2s ease,transform .2s ease;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
-    .toast.on{opacity:1;transform:translateY(0)}
-    .toast.info{background:#111827}
-    .toast.success{background:#16a34a}
-    .toast.error{background:#dc2626}
-    body.dark .toast{border-color:#2d3a50}
-
-    /* ---- Modo escuro ---- */
-    body.dark{background:#0b0f19; color:#e5e7eb}
-    body.dark .card{background:#0f172a;border-color:#263245;box-shadow:none}
-    body.dark .pill, body.dark .ghost, body.dark select, body.dark input, body.dark textarea{background:#0b1220;border-color:#2d3a50;color:#e5e7eb}
-    body.dark .muted, body.dark .tagline{color:#9ca3af}
-    body.dark .badge{background:#0b1220;border-color:#2d3a50;color:#e5e7eb}
-    body.dark .compare-block{background:#0b1220;border-color:#2d3a50}
-    body.dark .swatch{background:#0b1220;border-color:#2d3a50}
-    body.dark .sig{background:#0b1220;border-color:#2d3a50}
-
-    /* Print */
-    @media print{
-      body{background:#fff;color:#111827}
-      .print-hide{display:none !important}
-      .print-only{display:block !important}
-      .wrap{max-width:none;margin:0;padding:0}
-      .card{box-shadow:none;border:0;border-radius:0}
-      .page-break{page-break-before:always}
-      #qrWrap{display:flex;gap:24px;justify-content:center;margin-top:6px}
-    }
-    .print-only{display:none}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Personal Colors – Questionário + Laudo</title>
+<link rel="icon" href="favicon.ico">
+<meta name="theme-color" content="#d8d2cf">
+<style>
+:root{--page:#d8d2cf;--ink:#111827;--muted:#6b7280;--card:#fff;--brand:#7c3aed}
+*{box-sizing:border-box} html,body{margin:0;background:var(--page);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+.wrap{max-width:1000px;margin:28px auto;padding:0 14px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.brandbox{display:flex;align-items:center;gap:10px} .brandbox img{max-height:40px;object-fit:contain}
+.h1{font-weight:800;font-size:20px} .muted{color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.grid{display:grid;gap:12px} .g2{grid-template-columns:repeat(2,minmax(0,1fr))} .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+label{font-weight:600;display:block;margin-bottom:6px} input,select,textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
+.btn{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer} .p{background:var(--brand);color:#fff} .g{background:#fff;border:1px solid #e5e7eb}
+.row{display:flex;gap:10px;flex-wrap:wrap} .badge{border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px;font-size:12px;background:#fff}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px} .sw{border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#fff}
+.chip{height:60px} .meta{padding:6px 8px;font-size:12px}
+.hidden{display:none !important} .toast{position:fixed;right:14px;bottom:14px;background:#111827;color:#fff;padding:10px 12px;border-radius:10px}
+@media print{body{background:#fff} .noprint{display:none !important} .wrap{max-width:none;padding:0} .card{border:0;box-shadow:none;border-radius:0} }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div id="toastWrap" class="toastwrap"></div>
-    <header class="print-hide">
-      <div class="brandbox">
-        <img id="logoPreview" alt="logo"/>
-        <div>
-          <div class="brandname" id="brandPreview">Colorimetria & Pantone – Questionário + Laudo</div>
-          <div class="tagline" id="taglinePreview">Consultoria de Imagem & Estilo</div>
-        </div>
-      </div>
-      <div class="head-actions">
-        <button id="btnDark" class="ghost" title="Alternar modo escuro">🌙 Modo escuro</button>
-        <span class="pill">v1.6 • auto-fundo da logo • toasts</span>
-      </div>
-    </header>
+<div class="wrap">
+  <header class="noprint">
+    <div class="brandbox">
+      <img id="logoPreview" alt="logo">
+      <div><div class="h1" id="brandPreview">Colorimetria & Pantone</div><div class="muted" id="taglinePreview">Questionário + Laudo</div></div>
+    </div>
+    <div class="muted">v2 compacto</div>
+  </header>
 
-    <!-- BUILDER / QUESTIONÁRIO -->
-    <section id="builder" class="grid card">
-      <!-- Marca e identidade -->
-      <div class="grid grid-3">
-        <div>
-          <label>Nome da marca / estúdio</label>
-          <input id="brandName" type="text" placeholder="Ex.: Erika Muniz — Personal Stylist" />
-        </div>
-        <div>
-          <label>Tagline</label>
-          <input id="tagline" type="text" placeholder="Ex.: Consultoria de Imagem & Estilo" />
-        </div>
-        <div>
-          <label>Estilo do laudo</label>
-          <select id="styleSelect">
-            <option value="minimal">Minimal (sans-serif)</option>
-            <option value="editorial">Editorial (serif)</option>
-          </select>
-        </div>
-      </div>
-      <div class="grid grid-3">
-        <div>
-          <label>Logo (PNG/JPG)</label>
-          <input id="logoFile" type="file" accept="image/*" />
-          <div class="actions" style="margin-top:8px">
-            <button id="btnResetBg" class="ghost" type="button">Restaurar fundo padrão</button>
-          </div>
-          <div class="muted" style="font-size:12px;margin-top:6px">Ao escolher a logo, o fundo da página ajusta automaticamente para combinar com ela. Você pode restaurar quando quiser.</div>
-        </div>
-        <div>
-          <label>Cor da marca</label>
-          <input id="brandColor" type="color" value="#7c3aed" />
-        </div>
-        <div>
-          <label>Site/Instagram (para QR)</label>
-          <input id="contactSocial" type="url" placeholder="https://instagram.com/seu@ ou site" />
-        </div>
-      </div>
-      <div class="grid grid-3">
-        <div>
-          <label>E-mail</label>
-          <input id="contactEmail" type="email" placeholder="contato@exemplo.com" />
-        </div>
-        <div>
-          <label>Telefone/WhatsApp</label>
-          <input id="contactPhone" type="tel" placeholder="(xx) xxxxx-xxxx" />
-        </div>
-        <div>
-          <label>Analista</label>
-          <input id="analista" type="text" placeholder="Seu nome" />
-        </div>
-      </div>
-
-      <!-- Número do laudo -->
-      <div class="grid grid-3">
-        <div>
-          <label>Prefixo do laudo</label>
-          <input id="laudoPrefix" type="text" placeholder="LA" value="LA" />
-        </div>
-        <div>
-          <label>Ano</label>
-          <input id="laudoYear" type="text" />
-        </div>
-        <div>
-          <label>Sequencial</label>
-          <input id="laudoSeq" type="text" placeholder="001 (auto)" />
-        </div>
-      </div>
-
-      <!-- Cliente -->
-      <div class="grid grid-2">
-        <div>
-          <label>Nome do cliente</label>
-          <input id="nome" type="text" placeholder="Ex.: Anna Figueiredo" />
-        </div>
-        <div>
-          <label>Foto do cliente (opcional)</label>
-          <input id="fotoCliente" type="file" accept="image/*" />
-        </div>
-      </div>
-
-      <!-- Anexos de referência -->
-      <div class="grid grid-4">
-        <div>
-          <label>Ref. Pele (close)</label>
-          <input id="refPele" type="file" accept="image/*" />
-        </div>
-        <div>
-          <label>Ref. Olhos (close)</label>
-          <input id="refOlhos" type="file" accept="image/*" />
-        </div>
-        <div>
-          <label>Ref. Cabelo (close)</label>
-          <input id="refCabelo" type="file" accept="image/*" />
-        </div>
-        <div>
-          <label>Ref. Look (opcional)</label>
-          <input id="refLook" type="file" accept="image/*" />
-        </div>
-      </div>
-
-      <!-- Perguntas (parcial) -->
-      <div class="grid grid-3">
-        <div>
-          <label>1. Bronzeia fácil ou fica vermelha antes?</label>
-          <select id="q1"><option value="">— selecione —</option><option>Bronzeia facilmente</option><option>Fica vermelha antes</option></select>
-        </div>
-        <div>
-          <label>2. Fundo de pele percebido</label>
-          <select id="q2"><option value="">— selecione —</option><option>Dourado/Oliva</option><option>Neutro</option><option>Rosado/Azulado</option></select>
-        </div>
-        <div>
-          <label>3. Acessórios que favorecem mais</label>
-          <select id="q3"><option value="">— selecione —</option><option>Dourado</option><option>Prata</option><option>Ambos</option></select>
-        </div>
-      </div>
-      <div class="grid grid-3">
-        <div>
-          <label>4. Cabelo – reflexos predominantes</label>
-          <select id="q4"><option value="">— selecione —</option><option>Dourados</option><option>Acinzentados</option><option>Avermelhados</option><option>Neutros</option></select>
-        </div>
-        <div>
-          <label>5. Olhos – pigmento</label>
-          <select id="q5"><option value="">— selecione —</option><option>Quente (dourado/mel)</option><option>Neutro</option><option>Frio (acinzentado/azulado)</option></select>
-        </div>
-        <div>
-          <label>7. Contraste geral (foto PB)</label>
-          <select id="q7"><option value="">— selecione —</option><option>Alto</option><option>Médio</option><option>Baixo</option></select>
-        </div>
-      </div>
-      <div class="grid grid-3">
-        <div>
-          <label>10. Branco: gelo (frio) x neve (quente)</label>
-          <select id="q10"><option value="">— selecione —</option><option>Branco gelo</option><option>Branco neve</option><option>Empate</option></select>
-        </div>
-        <div>
-          <label>11. Rosa: pink (frio) x coral (quente)</label>
-          <select id="q11"><option value="">— selecione —</option><option>Rosa pink</option><option>Coral</option><option>Empate</option></select>
-        </div>
-        <div>
-          <label>12. Azul royal (frio) x verde oliva (quente)</label>
-          <select id="q12"><option value="">— selecione —</option><option>Azul royal</option><option>Verde oliva</option><option>Empate</option></select>
-        </div>
-      </div>
-      <div class="grid grid-2">
-        <div>
-          <label>14. Preferência de paleta</label>
-          <select id="q14"><option value="">— selecione —</option><option>Discreta/Neutra</option><option>Vibrante/Intensa</option><option>Romântica/Pastel</option><option>Dramática/Profunda</option></select>
-        </div>
-        <div>
-          <label>17. 3 cores que não podem faltar</label>
-          <input id="q17" type="text" placeholder="Ex.: off-white, terracota, azul-marinho" />
-        </div>
-      </div>
+  <section id="builder" class="card">
+    <div class="grid g3">
+      <div><label>Marca</label><input id="brandName" placeholder="Ex.: Erika Muniz – Personal Stylist"></div>
+      <div><label>Tagline</label><input id="tagline" placeholder="Ex.: Consultoria de Imagem & Estilo"></div>
+      <div><label>Logo (PNG/JPG)</label><input id="logoFile" type="file" accept="image/*"></div>
+    </div>
+    <div class="grid g3" style="margin-top:6px">
       <div>
-        <label>Observações (opcional)</label>
-        <textarea id="obs" placeholder="Anote sensações, comentários do teste de tecidos, luz utilizada etc."></textarea>
+        <label>Fundo da página (manual)</label>
+        <div class="row"><input id="pageBg" type="color" value="#d8d2cf" style="width:60px;padding:0;height:40px"><button id="applyBg" class="btn g">Aplicar</button><button id="resetBg" class="btn g">Padrão</button></div>
+        <div class="muted" id="bgNow">Fundo atual: #d8d2cf</div>
       </div>
-      <div class="actions">
-        <button id="btnLaudo" class="primary">Gerar laudo</button>
-        <button id="btnPDF" class="ghost" disabled>Exportar PDF</button>
-        <button id="btnDownloadHTMLTop" class="ghost">Baixar HTML</button>
-        <span class="muted">Dica: após gerar o laudo, revise as cores sugeridas antes de exportar.</span>
-      </div>
-    </section>
+      <div><label>Cor da marca</label><input id="brandColor" type="color" value="#7c3aed"></div>
+      <div><label>Contato (opcional)</label><input id="contact" placeholder="email • fone • @insta"></div>
+    </div>
 
-    <!-- LAUDO -->
-    <section id="laudo" class="hidden">
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <div class="brandbox">
-            <img id="logoOut" alt="logo"/>
-            <div>
-              <div class="brandname" id="brandOut">Colorimetria & Pantone – Questionário + Laudo</div>
-              <div class="tagline" id="taglineOut">Consultoria de Imagem & Estilo</div>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <div class="badge bad-neutral">Data: <strong id="dataHoje" style="margin-left:6px"></strong></div>
-            <div class="badge">Laudo Nº&nbsp;<strong id="laudoIdOut"></strong></div>
-          </div>
-        </div>
-        <p class="muted" id="ident"></p>
-        <div class="grid grid-3">
-          <div class="badge bad-warm">Subtom: <strong id="subtom"></strong></div>
-          <div class="badge bad-neutral">Contraste: <strong id="contraste"></strong></div>
-          <div class="badge bad-cool">Intensidade: <strong id="intensidade"></strong></div>
-        </div>
-      </div>
+    <hr style="margin:14px 0;border:0;border-top:1px solid #e5e7eb">
 
-      <div class="grid grid-2">
-        <div class="card">
-          <h3 style="margin-top:0">Estação sugerida</h3>
-          <p style="font-size:22px;margin:.25rem 0 0"><strong id="estacao"></strong></p>
-          <p class="muted">Ponto de partida. Confirme com teste de tecidos/blocos e luz natural.</p>
-        </div>
-        <div class="card photo">
-          <img id="fotoClienteOut" alt="Foto do cliente" />
-        </div>
-      </div>
+    <div class="grid g3">
+      <div><label>1. Bronzeia ou fica vermelha?</label><select id="q1"><option value="">—</option><option>Bronzeia facilmente</option><option>Fica vermelha antes</option></select></div>
+      <div><label>2. Fundo de pele</label><select id="q2"><option value="">—</option><option>Dourado/Oliva</option><option>Neutro</option><option>Rosado/Azulado</option></select></div>
+      <div><label>3. Acessórios</label><select id="q3"><option value="">—</option><option>Dourado</option><option>Prata</option><option>Ambos</option></select></div>
+      <div><label>4. Cabelo</label><select id="q4"><option value="">—</option><option>Dourados</option><option>Acinzentados</option><option>Avermelhados</option><option>Neutros</option></select></div>
+      <div><label>5. Olhos</label><select id="q5"><option value="">—</option><option>Quente (dourado/mel)</option><option>Neutro</option><option>Frio (acinzentado/azulado)</option></select></div>
+      <div><label>7. Contraste</label><select id="q7"><option value="">—</option><option>Alto</option><option>Médio</option><option>Baixo</option></select></div>
+      <div><label>10. Branco</label><select id="q10"><option value="">—</option><option>Branco gelo</option><option>Branco neve</option><option>Empate</option></select></div>
+      <div><label>11. Rosa</label><select id="q11"><option value="">—</option><option>Rosa pink</option><option>Coral</option><option>Empate</option></select></div>
+      <div><label>12. Azul × Verde</label><select id="q12"><option value="">—</option><option>Azul royal</option><option>Verde oliva</option><option>Empate</option></select></div>
+      <div><label>14. Preferência</label><select id="q14"><option value="">—</option><option>Discreta/Neutra</option><option>Vibrante/Intensa</option><option>Romântica/Pastel</option><option>Dramática/Profunda</option></select></div>
+      <div><label>Cliente</label><input id="cliente" placeholder="Nome do cliente"></div>
+      <div><label>Analista</label><input id="analista" placeholder="Seu nome"></div>
+    </div>
+    <div style="margin-top:10px" class="row">
+      <button id="gen" class="btn p">Gerar laudo</button>
+      <button id="pdf" class="btn g" disabled>Exportar PDF</button>
+    </div>
+  </section>
 
-      <!-- Referências visuais -->
-      <div class="card">
-        <h3 style="margin-top:0">Referências visuais (close)</h3>
-        <div class="refgrid">
-          <div class="refitem"><strong>Pele</strong><img id="imgPele" alt="Pele"/></div>
-          <div class="refitem"><strong>Olhos</strong><img id="imgOlhos" alt="Olhos"/></div>
-          <div class="refitem"><strong>Cabelo</strong><img id="imgCabelo" alt="Cabelo"/></div>
-        </div>
-        <div class="refgrid" style="margin-top:10px">
-          <div class="refitem" style="grid-column:1/-1"><strong>Look</strong><img id="imgLook" alt="Look"/></div>
-        </div>
+  <section id="laudo" class="hidden">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div class="brandbox"><img id="logoOut"><div><div class="h1" id="brandOut">Laudo</div><div class="muted" id="taglineOut"></div></div></div>
+        <div class="row"><span class="badge" id="dataHoje"></span><span class="badge" id="laudoId"></span></div>
       </div>
+      <div class="muted" id="ident"></div>
+      <div class="row" style="margin-top:6px"><span class="badge">Subtom: <b id="subtom"></b></span><span class="badge">Contraste: <b id="contraste"></b></span><span class="badge">Intensidade: <b id="intensidade"></b></span></div>
+    </div>
 
-      <!-- Parte 3: Blocos comparativos lado a lado -->
-      <div class="card">
-        <h3 style="margin-top:0">Comparação Direta</h3>
-        <div class="cols">
-          <div class="compare-block">
-            <div class="compare-title">Quente × Frio</div>
-            <div class="swatches" id="cmpQuente"></div>
-            <div class="swatches" id="cmpFrio"></div>
-          </div>
-          <div class="compare-block">
-            <div class="compare-title">Claro × Escuro</div>
-            <div class="swatches" id="cmpClaro"></div>
-            <div class="swatches" id="cmpEscuro"></div>
-          </div>
-          <div class="compare-block">
-            <div class="compare-title">Suave × Intenso</div>
-            <div class="swatches" id="cmpSuave"></div>
-            <div class="swatches" id="cmpIntenso"></div>
-          </div>
-        </div>
+    <div class="card">
+      <h3 style="margin:0 0 8px">Estação sugerida</h3>
+      <div class="row"><span class="badge" id="estacao"></span></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px">Paletas (referência visual)</h3>
+      <div class="grid g2">
+        <div><b>Primavera</b><div class="swatches" id="palPrimavera"></div></div>
+        <div><b>Verão</b><div class="swatches" id="palVerao"></div></div>
+        <div><b>Outono</b><div class="swatches" id="palOutono"></div></div>
+        <div><b>Inverno</b><div class="swatches" id="palInverno"></div></div>
       </div>
+    </div>
 
-      <!-- Parte 4: Paletas sazonais -->
-      <div class="card page-break">
-        <h3 style="margin-top:0">Paletas Sazonais – Referência (Pantone aprox.)</h3>
-        <div class="grid grid-2">
-          <div>
-            <h4>Primavera</h4>
-            <div class="swatches" id="palPrimavera"></div>
-          </div>
-          <div>
-            <h4>Verão</h4>
-            <div class="swatches" id="palVerao"></div>
-          </div>
-          <div>
-            <h4>Outono</h4>
-            <div class="swatches" id="palOutono"></div>
-          </div>
-          <div>
-            <h4>Inverno</h4>
-            <div class="swatches" id="palInverno"></div>
-          </div>
-        </div>
-      </div>
+    <div class="card noprint"><button class="btn p" onclick="window.print()">Exportar PDF</button></div>
+  </section>
+</div>
 
-      <!-- Neutros & Metálicos -->
-      <div class="card">
-        <h3 style="margin-top:0">Neutros & Metálicos (referência visual)</h3>
-        <div class="swatches" id="neutros"></div>
-        <div class="swatches" id="metalicos" style="margin-top:10px"></div>
-        <p class="foot">Observação: metálicos são <em>referenciais</em> – brilho/textura variam em tecido/maquiagem; Pantone metálico pode diferir em impressão.</p>
-      </div>
-
-      <div class="card">
-        <h3 style="margin-top:0">Sugestões de Cores Prioritárias</h3>
-        <p class="muted">Com base no resultado, priorize as amostras abaixo.</p>
-        <div class="swatches" id="sugestoes"></div>
-      </div>
-
-      <!-- Maquiagem por estação -->
-      <div class="card">
-        <h3 style="margin-top:0">Recomendações de maquiagem por estação</h3>
-        <div id="makeup"></div>
-        <p class="foot">Dica: ajuste a base pela luz do ambiente e teste no maxilar/pescoço; batons/blush podem variar conforme intensidade desejada.</p>
-      </div>
-
-      <div class="card">
-        <h3 style="margin-top:0">Assinaturas</h3>
-        <div class="sigbox">
-          <div class="sigrow">
-            <div>
-              <div class="siglabel">Assinatura do(a) Cliente</div>
-              <canvas id="sigCliente" class="sig"></canvas>
-              <div class="actions print-hide"><button class="ghost" id="clearSigCliente">Limpar</button></div>
-              <img id="sigClienteImg" alt="Assinatura do cliente" class="hidden"/>
-            </div>
-            <div>
-              <div class="siglabel">Assinatura do(a) Analista</div>
-              <canvas id="sigAnalista" class="sig"></canvas>
-              <div class="actions print-hide"><button class="ghost" id="clearSigAnalista">Limpar</button></div>
-              <img id="sigAnalistaImg" alt="Assinatura do analista" class="hidden"/>
-            </div>
-          </div>
-          <div class="actions print-hide"><button id="saveSigs" class="primary">Salvar assinaturas no laudo</button></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3 style="margin-top:0">Observações</h3>
-        <div id="obsOut" class="foot"></div>
-      </div>
-
-      <div class="actions print-hide">
-        <button class="success" onclick="window.print()">Exportar PDF</button>
-        <button id="btnDownloadHTML" class="ghost">Baixar HTML</button>
-        <a id="btnDownloadVCF" class="btnlike ghost" download="contato.vcf" href="#">Baixar vCard (.vcf)</a>
-        <button class="ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">Voltar ao topo</button>
-      </div>
-
-      <footer class="foot print-only" style="padding:16px;text-align:center">
-        <div id="footerBrand"></div>
-        <div id="footerContact"></div>
-        <div id="qrWrap">
-          <div>
-            <div>Site/Instagram</div>
-            <div id="footerQRLink"></div>
-          </div>
-          <div>
-            <div>vCard</div>
-            <div id="footerQRvCard"></div>
-          </div>
-        </div>
-      </footer>
-    </section>
-  </div>
+<div id="toast" class="toast hidden"></div>
 
 <script>
-// ---------- Helpers ----------
-function byId(id){return document.getElementById(id)}
-function readFileAsDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
-function setImg(el, dataURL){ if(!el) return; el.src=dataURL; el.classList.remove('hidden'); }
-function setThemeColor(hex){ let m=document.querySelector('meta[name=\"theme-color\"]'); if(!m){ m=document.createElement('meta'); m.setAttribute('name','theme-color'); document.head.appendChild(m);} m.setAttribute('content',hex); }
-function setPageBg(hex){ document.documentElement.style.setProperty('--page', hex); setThemeColor(hex); localStorage.setItem('colorim_pageBg', hex); }
-function resetPageBg(){ document.documentElement.style.setProperty('--page', '#f6f7fb'); setThemeColor('#f6f7fb'); localStorage.removeItem('colorim_pageBg'); toast('Fundo restaurado ao padrão.','info'); }
+const $=id=>document.getElementById(id);
+const showToast=(t)=>{const el=$('toast');el.textContent=t;el.classList.remove('hidden');setTimeout(()=>el.classList.add('hidden'),2200)};
+const setThemeColor=(hex)=>{let m=document.querySelector('meta[name=theme-color]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=hex};
+const setPageBg=(hex)=>{document.documentElement.style.setProperty('--page',hex);localStorage.setItem('pageBg',hex);$('bgNow').textContent='Fundo atual: '+hex;setThemeColor(hex)};
+const readFile=(f)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
 
-// ---------- Toast / Notificações amigáveis ----------
-function toast(msg, kind='info'){
-  const wrap = byId('toastWrap'); if(!wrap) return;
-  const el = document.createElement('div');
-  el.className = 'toast ' + kind;
-  el.textContent = msg;
-  wrap.appendChild(el);
-  requestAnimationFrame(()=> el.classList.add('on'));
-  setTimeout(()=>{ el.classList.remove('on'); setTimeout(()=>el.remove(), 300); }, 3500);
-}
-window.addEventListener('error', (ev)=>{ console.error(ev.error || ev.message); toast('Opa! Algo deu errado. Tente novamente ou recarregue a página.', 'error'); });
-window.addEventListener('unhandledrejection', (ev)=>{ console.error(ev.reason); toast('Falha inesperada. Tente novamente.', 'error'); });
+async function extractBg(dataURL){return new Promise((ok)=>{const img=new Image();img.onload=()=>{try{const w=img.naturalWidth,h=img.naturalHeight,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(img,0,0);const m=Math.max(1,Math.floor(Math.min(w,h)*0.1));function pick(x0,y0,w2,h2){const d=x.getImageData(x0,y0,w2,h2).data;const a=[];for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const Y=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];if(Y>150)a.push([d[i],d[i+1],d[i+2]])}return a}let s=[...pick(0,0,m,m),...pick(w-m,0,m,m),...pick(0,h-m,m,m),...pick(w-m,h-m,m,m)];if(s.length<64){s=[...s,...pick(0,0,w,m),...pick(0,h-m,w,m),...pick(0,0,m,h),...pick(w-m,0,m,h)]}if(!s.length){ok(null);return}const rs=s.map(v=>v[0]).sort((a,b)=>a-b), gs=s.map(v=>v[1]).sort((a,b)=>a-b), bs=s.map(v=>v[2]).sort((a,b)=>a-b);const med=a=>a[Math.floor(a.length/2)];const hex='#'+[med(rs),med(gs),med(bs)].map(v=>v.toString(16).padStart(2,'0')).join('');ok(hex)}catch(e){console.error(e);ok(null)}};img.onerror=()=>ok(null);img.src=dataURL})}
 
-// ---------- Paletas & Comparativos ----------
-const palettes=[
-  {estacao:\"Primavera\", nome:\"Coral vivo\", hex:\"#FF6F61\", pantone:\"PANTONE 16-1546\"},
-  {estacao:\"Primavera\", nome:\"Pêssego\", hex:\"#FFA07A\", pantone:\"PANTONE 1625 C\"},
-  {estacao:\"Primavera\", nome:\"Amarelo quente\", hex:\"#FFC928\", pantone:\"PANTONE 123 C\"},
-  {estacao:\"Primavera\", nome:\"Aqua\", hex:\"#64D8CB\", pantone:\"PANTONE 3242 C\"},
-  {estacao:\"Primavera\", nome:\"Verde menta\", hex:\"#9FD3C7\", pantone:\"PANTONE 337 C\"},
-  {estacao:\"Primavera\", nome:\"Camel claro\", hex:\"#D6B37E\", pantone:\"PANTONE 7502 C\"},
-  {estacao:\"Verão\", nome:\"Rosa frio\", hex:\"#F2A7C3\", pantone:\"PANTONE 699 C\"},
-  {estacao:\"Verão\", nome:\"Malva\", hex:\"#B784A7\", pantone:\"PANTONE 7440 C\"},
-  {estacao:\"Verão\", nome:\"Azul pó\", hex:\"#A9C1D9\", pantone:\"PANTONE 544 C\"},
-  {estacao:\"Verão\", nome:\"Azul aço\", hex:\"#7089A9\", pantone:\"PANTONE 5415 C\"},
-  {estacao:\"Verão\", nome:\"Lavanda suave\", hex:\"#C7B7E5\", pantone:\"PANTONE 7443 C\"},
-  {estacao:\"Verão\", nome:\"Sálvia\", hex:\"#9DB39B\", pantone:\"PANTONE 5585 C\"},
-  {estacao:\"Outono\", nome:\"Terracota\", hex:\"#C65D3A\", pantone:\"PANTONE 7572 C\"},
-  {estacao:\"Outono\", nome:\"Ferrugem\", hex:\"#B7410E\", pantone:\"PANTONE 1675 C\"},
-  {estacao:\"Outono\", nome:\"Mostarda\", hex:\"#D4A017\", pantone:\"PANTONE 7555 C\"},
-  {estacao:\"Outono\", nome:\"Verde oliva\", hex:\"#6B8E23\", pantone:\"PANTONE 7497 C\"},
-  {estacao:\"Outono\", nome:\"Teal queimado\", hex:\"#2A7F62\", pantone:\"PANTONE 7716 C\"},
-  {estacao:\"Outono\", nome:\"Marrom chocolate\", hex:\"#3E2723\", pantone:\"PANTONE 4975 C\"},
-  {estacao:\"Inverno\", nome:\"Azul profundo\", hex:\"#0F4C81\", pantone:\"PANTONE 19-4052\"},
-  {estacao:\"Inverno\", nome:\"Cobalto\", hex:\"#1F45FC\", pantone:\"PANTONE 2935 C\"},
-  {estacao:\"Inverno\", nome:\"Borgonha\", hex:\"#6B0F1A\", pantone:\"PANTONE 222 C\"},
-  {estacao:\"Inverno\", nome:\"Fúcsia\", hex:\"#D1006C\", pantone:\"PANTONE 213 C\"},
-  {estacao:\"Inverno\", nome:\"Esmeralda fria\", hex:\"#006D5B\", pantone:\"PANTONE 7716 C\"},
-  {estacao:\"Inverno\", nome:\"Cinza carvão\", hex:\"#33363F\", pantone:\"PANTONE 432 C\"}
-];
-const comparativos={
-  quente:[{nome:\"Mostarda\",hex:\"#D4A017\"},{nome:\"Coral\",hex:\"#FF6F61\"},{nome:\"Terracota\",hex:\"#C65D3A\"},{nome:\"Oliva\",hex:\"#6B8E23\"}],
-  frio:[{nome:\"Azul pó\",hex:\"#A9C1D9\"},{nome:\"Rosa frio\",hex:\"#F2A7C3\"},{nome:\"Lavanda\",hex:\"#C7B7E5\"},{nome:\"Esmeralda fria\",hex:\"#006D5B\"}],
-  claro:[{nome:\"Marfim\",hex:\"#F8F5E1\"},{nome:\"Bege claro\",hex:\"#F1E5CF\"},{nome:\"Menta pálida\",hex:\"#DDEFE9\"},{nome:\"Lilás claro\",hex:\"#EDE3FB\"}],
-  escuro:[{nome:\"Azul marinho\",hex:\"#0B2545\"},{nome:\"Vinho\",hex:\"#4A001F\"},{nome:\"Petróleo\",hex:\"#003B46\"},{nome:\"Chocolate\",hex:\"#3E2723\"}],
-  suave:[{nome:\"Pêssego suave\",hex:\"#FFD1B3\"},{nome:\"Rosa chá\",hex:\"#E6B7C8\"},{nome:\"Azul bebê\",hex:\"#CDE4F9\"},{nome:\"Sálvia\",hex:\"#B7C3A7\"}],
-  intenso:[{nome:\"Azul royal\",hex:\"#4169E1\"},{nome:\"Fúcsia\",hex:\"#D1006C\"},{nome:\"Esmeralda\",hex:\"#007F5F\"},{nome:\"Vermelho vivo\",hex:\"#D7263D\"}]
-};
-const neutros=[
-  {nome:\"Branco neve\",hex:\"#FDFDFB\",pantone:\"—\"},{nome:\"Off-white\",hex:\"#F7F4ED\",pantone:\"PANTONE 7499 C\"},
-  {nome:\"Marfim\",hex:\"#F8F5E1\",pantone:\"PANTONE 7499 C\"},{nome:\"Bege\",hex:\"#D9CBB5\",pantone:\"PANTONE 468 C\"},
-  {nome:\"Taupe\",hex:\"#B6A28E\",pantone:\"PANTONE Warm Gray 3 C\"},{nome:\"Camel\",hex:\"#C19A6B\",pantone:\"PANTONE 728 C\"},
-  {nome:\"Cinza médio\",hex:\"#9AA0A6\",pantone:\"PANTONE 444 C\"},{nome:\"Carvão\",hex:\"#33363F\",pantone:\"PANTONE 432 C\"}
-];
-const metalicos=[
-  {nome:\"Dourado (ref.)\",hex:\"#D4AF37\",pantone:\"Metallic ref.\"},
-  {nome:\"Prateado (ref.)\",hex:\"#C0C0C0\",pantone:\"Metallic ref.\"},
-  {nome:\"Rose Gold (ref.)\",hex:\"#B76E79\",pantone:\"Metallic ref.\"}
-];
-function swatchEl({hex,nome,pantone}){const d=document.createElement('div');d.className='swatch';d.innerHTML=`<div class=\"chip\" style=\"background:${hex}\"></div><div class=\"meta\"><strong>${nome||''}</strong><span>${hex}</span>${pantone?`<span>${pantone}</span>`:''}</div>`;return d}
-function renderSwatches(c,items){c.innerHTML='';items.forEach(x=>c.appendChild(swatchEl(x)))}
-function fillPalettes(){
-  renderSwatches(byId('palPrimavera'), palettes.filter(p=>p.estacao==='Primavera'));
-  renderSwatches(byId('palVerao'), palettes.filter(p=>p.estacao==='Verão'));
-  renderSwatches(byId('palOutono'), palettes.filter(p=>p.estacao==='Outono'));
-  renderSwatches(byId('palInverno'), palettes.filter(p=>p.estacao==='Inverno'));
-  renderSwatches(byId('cmpQuente'), comparativos.quente);
-  renderSwatches(byId('cmpFrio'), comparativos.frio);
-  renderSwatches(byId('cmpClaro'), comparativos.claro);
-  renderSwatches(byId('cmpEscuro'), comparativos.escuro);
-  renderSwatches(byId('cmpSuave'), comparativos.suave);
-  renderSwatches(byId('cmpIntenso'), comparativos.intenso);
-  renderSwatches(byId('neutros'), neutros);
-  renderSwatches(byId('metalicos'), metalicos);
-}
+function swatch(o){return `<div class='sw'><div class='chip' style='background:${o.hex}'></div><div class='meta'><b>${o.name}</b><div>${o.hex}</div></div></div>`}
+const pal={Primavera:[{name:'Coral vivo',hex:'#FF6F61'},{name:'Amarelo',hex:'#FFC928'},{name:'Aqua',hex:'#64D8CB'},{name:'Menta',hex:'#9FD3C7'}],Verao:[{name:'Rosa frio',hex:'#F2A7C3'},{name:'Malva',hex:'#B784A7'},{name:'Azul pó',hex:'#A9C1D9'},{name:'Lavanda',hex:'#C7B7E5'}],Outono:[{name:'Terracota',hex:'#C65D3A'},{name:'Mostarda',hex:'#D4A017'},{name:'Oliva',hex:'#6B8E23'},{name:'Teal',hex:'#2A7F62'}],Inverno:[{name:'Azul profundo',hex:'#0F4C81'},{name:'Cobalto',hex:'#1F45FC'},{name:'Borgonha',hex:'#6B0F1A'},{name:'Fúcsia',hex:'#D1006C'}]};
+function renderPal(){$('palPrimavera').innerHTML=pal.Primavera.map(swatch).join('');$('palVerao').innerHTML=pal.Verao.map(swatch).join('');$('palOutono').innerHTML=pal.Outono.map(swatch).join('');$('palInverno').innerHTML=pal.Inverno.map(swatch).join('')}
 
-// ---------- Assinatura ----------
-function SigPad(canvas){
-  const ctx=canvas.getContext('2d');ctx.lineWidth=2;ctx.lineCap='round';ctx.strokeStyle='#111827';
-  let drawing=false,prev=null;function pos(e){const r=canvas.getBoundingClientRect();const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;return {x,y}}
-  function start(e){drawing=true;prev=pos(e)}
-  function move(e){if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(p.x,p.y);ctx.stroke();prev=p}
-  function end(){drawing=false}
-  canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);window.addEventListener('pointerup',end);
-  canvas.addEventListener('touchstart',e=>{e.preventDefault();start(e)},{passive:false});
-  canvas.addEventListener('touchmove',e=>{e.preventDefault();move(e)},{passive:false});
-  window.addEventListener('touchend',end);
-  return {clear:()=>ctx.clearRect(0,0,canvas.width,canvas.height), toDataURL:()=>canvas.toDataURL('image/png')}
-}
-let sigClient, sigAnalyst;
+const rules={Q1:{'Bronzeia facilmente':[1,0],'Fica vermelha antes':[0,1]},Q2:{'Dourado/Oliva':[1,0],'Neutro':[0.5,0.5],'Rosado/Azulado':[0,1]},Q3:{'Dourado':[1,0],'Prata':[0,1],'Ambos':[0.5,0.5]},Q4:{'Dourados':[1,0],'Acinzentados':[0,1],'Avermelhados':[1,0],'Neutros':[0.5,0.5]},Q5:{'Quente (dourado/mel)':[1,0],'Neutro':[0.5,0.5],'Frio (acinzentado/azulado)':[0,1]},Q10:{'Branco neve':[1,0],'Branco gelo':[0,1],'Empate':[0.5,0.5]},Q11:{'Coral':[1,0],'Rosa pink':[0,1],'Empate':[0.5,0.5]},Q12:{'Verde oliva':[1,0],'Azul royal':[0,1],'Empate':[0.5,0.5]}};
+function score(map){let w=0,c=0;for(const k in rules){const a=map[k];if(a&&rules[k][a]){w+=rules[k][a][0];c+=rules[k][a][1];}}return{w,c}}
+function dom(sc){if(sc.w>sc.c+1)return'Warm';if(sc.c>sc.w+1)return'Cool';return'Neutro'}
+function contrast(v){return v||'Médio'} function intensity(v){return (v==='Vibrante/Intensa'||v==='Dramática/Profunda')?'Alta':'Baixa'}
+function season(d,ctr,int){const t={'Warm|Alto|Alta':'Outono Profundo','Warm|Alto|Baixa':'Outono Quente','Warm|Baixo|Alta':'Primavera Quente','Warm|Baixo|Baixa':'Primavera Clara','Cool|Alto|Alta':'Inverno Frio','Cool|Alto|Baixa':'Inverno Suave','Cool|Baixo|Alta':'Verão Frio','Cool|Baixo|Baixa':'Verão Suave'}; if(d==='Neutro'){if(ctr==='Alto')return 'Intermediária (tende a Inverno/Outono)'; if(ctr==='Baixo') return 'Intermediária (tende a Verão/Primavera)'; return 'Intermediária'} return t[`${d}|${ctr}|${int}`]||'Intermediária'}
 
-// ---------- QR Codes / vCard ----------
-function qrImg(data){const img=new Image();img.width=120;img.height=120;img.alt='QR';img.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data='+encodeURIComponent(data);return img}
-function genVCard(v){
-  const lines=['BEGIN:VCARD','VERSION:3.0'];
-  if(v.analista){const parts=v.analista.split(' ');const given=parts[0]||'';const family=parts.slice(1).join(' ');lines.push(`N:${family};${given};;;`);lines.push(`FN:${v.analista}`)} else if(v.brand){lines.push(`FN:${v.brand}`)}
-  if(v.brand) lines.push(`ORG:${v.brand}`);
-  if(v.phone) lines.push(`TEL;TYPE=CELL,VOICE:${v.phone}`);
-  if(v.email) lines.push(`EMAIL;TYPE=INTERNET:${v.email}`);
-  if(v.social) lines.push(`URL:${v.social}`);
-  lines.push('END:VCARD');
-  return lines.join('\\n');
-}
-function setupQRs(v){
-  const linkWrap=byId('footerQRLink');const vcardWrap=byId('footerQRvCard');linkWrap.innerHTML='';vcardWrap.innerHTML='';
-  if(v.social){linkWrap.appendChild(qrImg(v.social))}
-  const vcf=genVCard(v);vcardWrap.appendChild(qrImg(vcf));
-  const a=byId('btnDownloadVCF');a.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(vcf);
-}
+$('applyBg').onclick=()=>{setPageBg($('pageBg').value);showToast('Fundo atualizado')};
+$('resetBg').onclick=()=>{setPageBg('#d8d2cf');showToast('Fundo restaurado')};
+$('brandColor').oninput=(e)=>{document.documentElement.style.setProperty('--brand',e.target.value)};
+$('logoFile').onchange=async(e)=>{const f=e.target.files[0];if(!f)return;const data=await readFile(f);localStorage.setItem('logo',data);$('logoPreview').src=data;$('logoOut').src=data;const hex=await extractBg(data);if(hex){setPageBg(hex);showToast('Fundo pela logo: '+hex)}else{showToast('Não deu para detectar o fundo da logo')}};
 
-// ---------- Detecção de cor de fundo da LOGO ----------
-async function extractBgFromDataURL(dataURL){
-  return new Promise((resolve)=>{
-    const img=new Image();
-    img.onload=()=>{
-      const w=img.naturalWidth,h=img.naturalHeight;
-      const c=document.createElement('canvas'); c.width=w; c.height=h;
-      const ctx=c.getContext('2d'); ctx.drawImage(img,0,0);
-      const m=Math.max(1, Math.floor(Math.min(w,h)*0.1));
-      function sample(x,y,w2,h2){
-        const {data}=ctx.getImageData(x,y,w2,h2);
-        const out=[];
-        for(let i=0;i<data.length;i+=4){
-          const r=data[i],g=data[i+1],b=data[i+2],a=data[i+3];
-          if(a<220) continue;
-          const Y=0.2126*r+0.7152*g+0.0722*b;
-          if(Y>150) out.push([r,g,b]);
-        }
-        return out;
-      }
-      let samples=[
-        ...sample(0,0,m,m), ...sample(w-m,0,m,m),
-        ...sample(0,h-m,m,h?m:1), ...sample(w-m,h-m,m,m)
-      ];
-      if(samples.length<64){
-        samples=[...samples, ...sample(0,0,w,m), ...sample(0,h-m,w,m), ...sample(0,0,m,h), ...sample(w-m,0,m,h)];
-      }
-      if(samples.length===0){
-        const {data}=ctx.getImageData(0,0,w,h);
-        for(let i=0;i<data.length;i+=4){ samples.push([data[i],data[i+1],data[i+2]]); }
-      }
-      const rarr=samples.map(s=>s[0]).sort((a,b)=>a-b);
-      const garr=samples.map(s=>s[1]).sort((a,b)=>a-b);
-      const barr=samples.map(s=>s[2]).sort((a,b)=>a-b);
-      const med=(arr)=>arr[Math.floor(arr.length/2)];
-      const r=med(rarr), g=med(garr), b=med(barr);
-      const hex='#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
-      resolve(hex);
-    };
-    img.onerror=()=>resolve(null);
-    img.src=dataURL;
-  });
-}
+function pad3(n){return String(n).padStart(3,'0')} function nextSeq(y){const k='seq_'+y;let n=+localStorage.getItem(k)||0;localStorage.setItem(k,++n);return n}
+$('gen').onclick=()=>{const v={Q1:$('q1').value,Q2:$('q2').value,Q3:$('q3').value,Q4:$('q4').value,Q5:$('q5').value,Q7:$('q7').value,Q10:$('q10').value,Q11:$('q11').value,Q12:$('q12').value,Q14:$('q14').value};const s=score(v);const D=dom(s),C=contrast(v.Q7),I=intensity(v.Q14);const est=season(D,C,I);const now=new Date();const y=String(now.getFullYear());const id='LA-'+y+'-'+pad3(nextSeq(y));$('brandOut').textContent=$('brandName').value||'Laudo';$('taglineOut').textContent=$('tagline').value||'Colorimetria & Pantone';$('brandPreview').textContent=$('brandOut').textContent;$('taglinePreview').textContent=$('taglineOut').textContent;$('dataHoje').textContent=now.toLocaleDateString('pt-BR');$('laudoId').textContent=id;$('ident').textContent=[$('cliente').value&&('Cliente: '+$('cliente').value),$('analista').value&&('Analista: '+$('analista').value),$('contact').value].filter(Boolean).join(' • ');$('subtom').textContent=D;$('contraste').textContent=C;$('intensidade').textContent=I;$('estacao').textContent=est;renderPal();$('laudo').classList.remove('hidden');$('pdf').disabled=false;window.scrollTo({top:$('laudo').offsetTop-8,behavior:'smooth'});showToast('Laudo gerado ✅')};
+$('pdf').onclick=(e)=>{e.preventDefault();window.print()};
 
-// ---------- Dark mode ----------
-function applyDark(on){document.body.classList.toggle('dark', !!on);localStorage.setItem('colorim_dark', on?'1':'0');byId('btnDark').textContent=on?'☀️ Modo claro':'🌙 Modo escuro'}
-
-// ---------- Download do HTML ----------
-function downloadHTML(){
-  const payload={
-    colorimetria_form: localStorage.getItem('colorimetria_form')||null,
-    colorim_logo: localStorage.getItem('colorim_logo')||null,
-    colorim_foto: localStorage.getItem('colorim_foto')||null,
-    colorim_ref_pele: localStorage.getItem('colorim_ref_pele')||null,
-    colorim_ref_olhos: localStorage.getItem('colorim_ref_olhos')||null,
-    colorim_ref_cabelo: localStorage.getItem('colorim_ref_cabelo')||null,
-    colorim_ref_look: localStorage.getItem('colorim_ref_look')||null,
-    colorim_brandColor: localStorage.getItem('colorim_brandColor')||null,
-    colorim_theme: localStorage.getItem('colorim_theme')||null,
-    colorim_dark: localStorage.getItem('colorim_dark')||null,
-    colorim_pageBg: localStorage.getItem('colorim_pageBg')||null
-  };
-  const html=document.documentElement.outerHTML;
-  const inject=`<script>(function(){try{var d=${JSON.stringify(payload)};if(d)for(var k in d){if(d[k]) localStorage.setItem(k,d[k]);} document.addEventListener('DOMContentLoaded',function(){ if(d.colorim_brandColor){ document.documentElement.style.setProperty('--brand', d.colorim_brandColor);} if(d.colorim_theme==='editorial'){ document.body.classList.add('theme-editorial'); } if(d.colorim_dark==='1'){ document.body.classList.add('dark'); } if(d.colorim_pageBg){ document.documentElement.style.setProperty('--page', d.colorim_pageBg); var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute('content', d.colorim_pageBg); } }); }catch(e){}})();<\\/script>`;
-  const final=html.replace('</body>', inject+'\\n</body>');
-  const blob=new Blob([final],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Colorimetria_App.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000)
-}
-
-// ---------- Numeração do Laudo ----------
-function nextSeq(year){const k='colorim_seq_'+year;let n=parseInt(localStorage.getItem(k)||'0',10)||0;n++;localStorage.setItem(k,String(n));return n}
-function pad3(n){return String(n).padStart(3,'0')}
-
-// ---------- Geração do Laudo ----------
-function generateLaudo(){
-  const now=new Date();
-  const v={
-    brand:byId('brandName').value.trim(),
-    tagline:byId('tagline').value.trim(),
-    social:byId('contactSocial').value.trim(),
-    email:byId('contactEmail').value.trim(),
-    phone:byId('contactPhone').value.trim(),
-    nome:byId('nome').value.trim(),
-    analista:byId('analista').value.trim(),
-    Q1:byId('q1').value,Q2:byId('q2').value,Q3:byId('q3').value,
-    Q4:byId('q4').value,Q5:byId('q5').value,Q7:byId('q7').value,
-    Q10:byId('q10').value,Q11:byId('q11').value,Q12:byId('q12').value,
-    Q14:byId('q14').value,Q17:byId('q17').value.trim(),OBS:byId('obs').value.trim(),
-    logo:localStorage.getItem('colorim_logo')||'',
-    foto:localStorage.getItem('colorim_foto')||'',
-    imgPele:localStorage.getItem('colorim_ref_pele')||'',
-    imgOlhos:localStorage.getItem('colorim_ref_olhos')||'',
-    imgCabelo:localStorage.getItem('colorim_ref_cabelo')||'',
-    imgLook:localStorage.getItem('colorim_ref_look')||''
-  };
-  // Laudo ID
-  const prefix=(byId('laudoPrefix').value.trim()||'LA').toUpperCase();
-  const year=(byId('laudoYear').value.trim()||String(now.getFullYear())).replace(/[^0-9]/g,'');
-  let seqStr=byId('laudoSeq').value.trim();
-  let seq=seqStr?parseInt(seqStr,10):nextSeq(year);
-  if(!seq||seq<1) seq=nextSeq(year);
-  seqStr=pad3(seq);
-  const laudoId=`${prefix}-${year}-${seqStr}`;
-  byId('laudoSeq').value=seqStr;
-
-  // Scoring
-  const sc=scoreWarmCool({Q1:v.Q1,Q2:v.Q2,Q3:v.Q3,Q4:v.Q4,Q5:v.Q5,Q10:v.Q10,Q11:v.Q11,Q12:v.Q12});
-  const dom=dominance(sc); const contr=contrastLabel(v.Q7); const inten=intensityLabel(v.Q14); const est=decideSeason(dom,contr,inten);
-
-  // Cabeçalho do laudo
-  byId('dataHoje').textContent= now.toLocaleDateString('pt-BR');
-  byId('brandOut').textContent=v.brand||'Colorimetria & Pantone – Questionário + Laudo';
-  byId('taglineOut').textContent=v.tagline||'Consultoria de Imagem & Estilo';
-  byId('brandPreview').textContent=byId('brandOut').textContent;
-  byId('taglinePreview').textContent=byId('taglineOut').textContent;
-  byId('laudoIdOut').textContent=laudoId;
-  if(v.logo){setImg(byId('logoOut'),v.logo);setImg(byId('logoPreview'),v.logo)}
-
-  // Identificação
-  byId('ident').textContent=`${v.nome?`Cliente: ${v.nome} • `:''}${v.analista?`Analista: ${v.analista}`:''}`;
-  byId('subtom').textContent=dom; byId('contraste').textContent=contr; byId('intensidade').textContent=inten; byId('estacao').textContent=est;
-  byId('obsOut').textContent=v.OBS||'—'; if(v.foto) setImg(byId('fotoClienteOut'), v.foto);
-
-  // Imagens de referência
-  if(v.imgPele) setImg(byId('imgPele'), v.imgPele);
-  if(v.imgOlhos) setImg(byId('imgOlhos'), v.imgOlhos);
-  if(v.imgCabelo) setImg(byId('imgCabelo'), v.imgCabelo);
-  if(v.imgLook) setImg(byId('imgLook'), v.imgLook);
-
-  // Footer/QR
-  byId('footerBrand').textContent=v.brand||'';
-  byId('footerContact').textContent=[v.email,v.phone,v.social].filter(Boolean).join(' • ');
-  setupQRs(v);
-
-  // Sugestões focadas
-  const major=majorSeason(est); let sug=[];
-  if(major==='Intermediária'){
-    const base=[].concat(palettes.filter(p=>p.estacao==='Primavera'),palettes.filter(p=>p.estacao==='Verão'),palettes.filter(p=>p.estacao==='Outono'),palettes.filter(p=>p.estacao==='Inverno'));
-    const pref=contr==='Alto'?['Inverno','Outono']:(contr==='Baixo'?['Verão','Primavera']:['Primavera','Verão']);
-    sug=base.filter(p=>pref.includes(p.estacao)).slice(0,12);
-  }else{ sug=palettes.filter(p=>p.estacao===major); }
-  renderSwatches(byId('sugestoes'),sug);
-  renderMakeup(est);
-
-  // Mostrar laudo
-  byId('laudo').classList.remove('hidden');
-  byId('btnPDF').disabled=false;
-
-  // Persistir
-  localStorage.setItem('colorimetria_form', JSON.stringify({...v, LAUDO_ID:laudoId, LAUDO_YEAR:year, LAUDO_SEQ:seqStr, LAUDO_PREFIX:prefix}));
-  localStorage.setItem('colorim_last_id', laudoId);
-  window.scrollTo({top:byId('laudo').offsetTop-8,behavior:'smooth'});
-
-  // Signature pads (uma vez)
-  if(!sigClient){ sigClient=SigPad(byId('sigCliente')); sigAnalyst=SigPad(byId('sigAnalista')); }
-  toast('Laudo gerado com sucesso! ✅','success');
-}
-
-// ---------- Scoring helpers ----------
-const rules={
-  Q1:{'Bronzeia facilmente':[1,0],'Fica vermelha antes':[0,1]},
-  Q2:{'Dourado/Oliva':[1,0],'Neutro':[0.5,0.5],'Rosado/Azulado':[0,1]},
-  Q3:{'Dourado':[1,0],'Prata':[0,1],'Ambos':[0.5,0.5]},
-  Q4:{'Dourados':[1,0],'Acinzentados':[0,1],'Avermelhados':[1,0],'Neutros':[0.5,0.5]},
-  Q5:{'Quente (dourado/mel)':[1,0],'Neutro':[0.5,0.5],'Frio (acinzentado/azulado)':[0,1]},
-  Q10:{'Branco neve':[1,0],'Branco gelo':[0,1],'Empate':[0.5,0.5]},
-  Q11:{'Coral':[1,0],'Rosa pink':[0,1],'Empate':[0.5,0.5]},
-  Q12:{'Verde oliva':[1,0],'Azul royal':[0,1],'Empate':[0.5,0.5]}
-};
-function scoreWarmCool(vmap){let warm=0,cool=0;for(const[k,opts]of Object.entries(rules)){const ans=vmap[k];if(ans&&opts[ans]){warm+=opts[ans][0];cool+=opts[ans][1];}}return{warm,cool}}
-function dominance({warm,cool}){if(warm>cool+1)return'Warm';if(cool>warm+1)return'Cool';return'Neutro'}
-function contrastLabel(v){if(v==='Alto')return'Alto';if(v==='Baixo')return'Baixo';return'Médio'}
-function intensityLabel(v){return(v==='Vibrante/Intensa'||v==='Dramática/Profunda')?'Alta':'Baixa'}
-function decideSeason(dom,contr,inten){
-  const t={'Warm|Alto|Alta':'Outono Profundo','Warm|Alto|Baixa':'Outono Quente','Warm|Baixo|Alta':'Primavera Quente','Warm|Baixo|Baixa':'Primavera Clara','Cool|Alto|Alta':'Inverno Frio','Cool|Alto|Baixa':'Inverno Suave','Cool|Baixo|Alta':'Verão Frio','Cool|Baixo|Baixa':'Verão Suave'};
-  if(dom==='Neutro'){if(contr==='Médio')return inten==='Alta'?'Intermediária (testar vibrantes)':'Intermediária (testar suaves)';return contr==='Alto'?'Intermediária (tende a Inverno/Outono)':'Intermediária (tende a Verão/Primavera)'}
-  return t[`${dom}|${contr}|${inten}`]||'Intermediária'
-}
-function majorSeason(est){if(/Primavera/.test(est))return'Primavera';if(/Verão/.test(est))return'Verão';if(/Outono/.test(est))return'Outono';if(/Inverno/.test(est))return'Inverno';return'Intermediária'}
-
-// ---------- Maquiagem por estação ----------
-function renderMakeup(est){
-  const mj = majorSeason(est);
-  const M = {
-    'Primavera': {base:'Subtom quente neutro a dourado; acabamentos leve a natural. Corretivo pêssego para olheiras.',blush:'Pêssego, coral suave, damasco.',olhos:'Dourado, bronze claro, oliva claro, champagne; delineador marrom.',labios:'Coral, pêssego, melancia, vermelho tomate.'},
-    'Verão': {base:'Subtom frio/rosado ou neutro-frio; acabamentos leve/sedoso.',blush:'Rosa chá, malva suave.',olhos:'Taupe, cinza frio, ameixa clara, azul pó; delineador grafite.',labios:'Rosa frio, framboesa suave, malva.'},
-    'Outono': {base:'Subtom quente/oliva; acabamento natural/acetinado.',blush:'Terracota, pêssego queimado.',olhos:'Cobre, bronze, oliva, teal queimado; delineador marrom escuro.',labios:'Terracota, tijolo, caramelo, vermelho queimado.'},
-    'Inverno': {base:'Subtom frio/neutro; cobertura média; contraste definido.',blush:'Rosa frio, framboesa, ameixa.',olhos:'Preto/grafite, marinho, prata, esmeralda fria; brilho pontual frio.',labios:'Fúcsia, cereja, bordô, vermelho frio.'},
-    'Intermediária': {base:'Neutro (teste sob luz natural). Ajuste conforme contraste.',blush:'Do pêssego ao rosa chá, conforme preferência.',olhos:'Neutros versáteis (taupe, bronze suave, sálvia).',labios:'Do coral ao rosa, evitando extremos se o contraste for baixo.'}
-  };
-  const r = M[mj]; const el = byId('makeup'); if(!el||!r) return;
-  el.innerHTML = `<div class="grid grid-2">
-    <div><strong>Base/Correção</strong><br><span class="foot">${r.base}</span></div>
-    <div><strong>Blush</strong><br><span class="foot">${r.blush}</span></div>
-    <div><strong>Olhos</strong><br><span class="foot">${r.olhos}</span></div>
-    <div><strong>Lábios</strong><br><span class="foot">${r.labios}</span></div>
-  </div>`;
-}
-
-// ---------- Eventos & Persistência ----------
-function restore(){
-  byId('laudoYear').value=String(new Date().getFullYear());
-  const raw=localStorage.getItem('colorimetria_form');
-  if(raw){try{const v=JSON.parse(raw);
-    ['brandName','tagline','contactSocial','contactEmail','contactPhone','nome','analista','q17','obs'].forEach(id=>{const key=id.replace('q','Q').toUpperCase();if(v[key])byId(id).value=v[key]});
-    ['q1','q2','q3','q4','q5','q7','q10','q11','q12','q14'].forEach(id=>{const key=id.toUpperCase();if(v[key])byId(id).value=v[key]});
-    if(v.LAUDO_PREFIX) byId('laudoPrefix').value=v.LAUDO_PREFIX;
-    if(v.LAUDO_YEAR) byId('laudoYear').value=v.LAUDO_YEAR;
-    if(v.LAUDO_SEQ) byId('laudoSeq').value=v.LAUDO_SEQ;
-    if(v.logo){setImg(byId('logoPreview'),v.logo)} if(v.foto){setImg(byId('fotoClienteOut'),v.foto)}
-    if(v.imgPele){setImg(byId('imgPele'),v.imgPele)} if(v.imgOlhos){setImg(byId('imgOlhos'),v.imgOlhos)} if(v.imgCabelo){setImg(byId('imgCabelo'),v.imgCabelo)} if(v.imgLook){setImg(byId('imgLook'),v.imgLook)}
-  }catch(e){}}
-  const brandCol=localStorage.getItem('colorim_brandColor'); if(brandCol){byId('brandColor').value=brandCol;document.documentElement.style.setProperty('--brand',brandCol)}
-  const theme=localStorage.getItem('colorim_theme'); if(theme==='editorial'){document.body.classList.add('theme-editorial');byId('styleSelect').value='editorial'}
-  const dark=localStorage.getItem('colorim_dark')==='1'; applyDark(dark);
-  const pageBg=localStorage.getItem('colorim_pageBg'); if(pageBg){ document.documentElement.style.setProperty('--page', pageBg); setThemeColor(pageBg); }
-}
-
-// uploads
-byId('logoFile').addEventListener('change',async e=>{
-  const f=e.target.files[0]; if(!f)return;
-  const data=await readFileAsDataURL(f);
-  localStorage.setItem('colorim_logo',data);
-  setImg(byId('logoPreview'),data);
-  if(!byId('laudo').classList.contains('hidden')) setImg(byId('logoOut'),data);
-  // auto-ajustar fundo pela logo
-  try{
-    const hex=await extractBgFromDataURL(data);
-    if(hex){ setPageBg(hex); toast('Fundo ajustado pela logo: '+hex,'success'); }
-  }catch(err){ console.error(err); toast('Não foi possível ler a cor de fundo da logo.','error'); }
-});
-byId('fotoCliente').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_foto',data);setImg(byId('fotoClienteOut'),data)});
-byId('refPele').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_ref_pele',data);setImg(byId('imgPele'),data)});
-byId('refOlhos').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_ref_olhos',data);setImg(byId('imgOlhos'),data)});
-byId('refCabelo').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_ref_cabelo',data);setImg(byId('imgCabelo'),data)});
-byId('refLook').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const data=await readFileAsDataURL(f);localStorage.setItem('colorim_ref_look',data);setImg(byId('imgLook'),data)});
-
-// cor da marca
-byId('brandColor').addEventListener('input',e=>{const c=e.target.value;document.documentElement.style.setProperty('--brand',c);localStorage.setItem('colorim_brandColor',c)});
-
-// estilo do laudo
-document.getElementById('styleSelect').addEventListener('change',e=>{const v=e.target.value;if(v==='editorial'){document.body.classList.add('theme-editorial')}else{document.body.classList.remove('theme-editorial')}localStorage.setItem('colorim_theme',v)});
-
-// dark mode
-byId('btnDark').addEventListener('click',()=>{applyDark(!document.body.classList.contains('dark'))});
-
-// gerar laudo / PDF / downloads (com try/catch + toasts)
-byId('btnLaudo').addEventListener('click',e=>{e.preventDefault();try{generateLaudo();}catch(err){console.error(err);toast('Não foi possível gerar o laudo. Revise as respostas e tente novamente.','error');}});
-byId('btnPDF').addEventListener('click',e=>{e.preventDefault();try{window.print();toast('Abrindo visualização para PDF...','info');}catch(err){console.error(err);toast('Não foi possível abrir a impressão.','error');}});
-byId('btnDownloadHTML').addEventListener('click',e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
-byId('btnDownloadHTMLTop').addEventListener('click',e=>{e.preventDefault();try{downloadHTML();toast('Gerando cópia do app com seu estado…','info');}catch(err){console.error(err);toast('Falha ao gerar o HTML.','error');}});
-
-// restaurar fundo padrão
-byId('btnResetBg').addEventListener('click', ()=> resetPageBg());
-
-// init
-fillPalettes();
-restore();
+(function init(){const bg=localStorage.getItem('pageBg');if(bg){document.documentElement.style.setProperty('--page',bg);$('pageBg').value=bg;$('bgNow').textContent='Fundo atual: '+bg} renderPal();})();
 </script>
 </body>
 </html>
